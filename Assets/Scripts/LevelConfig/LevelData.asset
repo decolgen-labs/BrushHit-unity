@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0504c386a624b44b8ec29096b766278, type: 3}
+  m_Name: LevelData
+  m_EditorClassIdentifier: 
+  LevelDatas:
+  - StagesData:
+    - Data: {fileID: 7765621002022053470, guid: 4b41625bdaa77c54cb41a143c0a5739e, type: 3}
+      DefaultColor: {r: 1, g: 0, b: 0, a: 1}
+      BrushedColor: {r: 1, g: 1, b: 0, a: 1}
+    - Data: {fileID: 7437202959163485209, guid: 2dc8c3838c3a80c4d962a5deb5d152cd, type: 3}
+      DefaultColor: {r: 0, g: 0, b: 1, a: 1}
+      BrushedColor: {r: 0, g: 1, b: 0, a: 1}
+    - Data: {fileID: 4879908864869465321, guid: 5b4c396dc9218f647aa268f09e5025a8, type: 3}
+      DefaultColor: {r: 0.036642075, g: 1, b: 0, a: 1}
+      BrushedColor: {r: 1, g: 0.13178638, b: 0, a: 1}
+    - Data: {fileID: 4081694380339639689, guid: 71b52d9e636e21f4a99ba1f6d63aee8c, type: 3}
+      DefaultColor: {r: 0, g: 1, b: 0.75478816, a: 1}
+      BrushedColor: {r: 1, g: 0, b: 0.9193015, a: 1}
+  - StagesData:
+    - Data: {fileID: 4829821431139806690, guid: c00119f93e5c7b149a44f339a8cb5639, type: 3}
+      DefaultColor: {r: 1, g: 0, b: 0, a: 1}
+      BrushedColor: {r: 0, g: 1, b: 1, a: 1}
+    - Data: {fileID: 3204028732326667845, guid: e25535622cf0cc84b9c23851418d1a86, type: 3}
+      DefaultColor: {r: 1, g: 0, b: 1, a: 1}
+      BrushedColor: {r: 0, g: 1, b: 0, a: 1}
+    - Data: {fileID: 5174251353663255319, guid: 6e9774df353b7794d8378e0ba08ea7f5, type: 3}
+      DefaultColor: {r: 0, g: 0.23941994, b: 1, a: 1}
+      BrushedColor: {r: 1, g: 0, b: 0.03871727, a: 1}
+    - Data: {fileID: 7433659528425351053, guid: d34a03bb2b7191348902410a7bdcc8cf, type: 3}
+      DefaultColor: {r: 1, g: 0, b: 1, a: 1}
+      BrushedColor: {r: 0, g: 0.0647583, b: 1, a: 1}
+  - StagesData:
+    - Data: {fileID: 4829821431139806690, guid: d144438e0d1909e4785bfe485b1ff4c4, type: 3}
+      DefaultColor: {r: 1, g: 0.89839494, b: 0, a: 1}
+      BrushedColor: {r: 1, g: 0, b: 0.06320763, a: 1}
+    - Data: {fileID: 3204028732326667845, guid: 283bc77cd4b3dd1428e795f3b06bcc2c, type: 3}
+      DefaultColor: {r: 0, g: 1, b: 0.037374735, a: 1}
+      BrushedColor: {r: 0, g: 0.06453419, b: 1, a: 1}
+    - Data: {fileID: 5174251353663255319, guid: 782bde4269b86354eb3ae42bbf1a9a4d, type: 3}
+      DefaultColor: {r: 1, g: 0, b: 0.8156085, a: 1}
+      BrushedColor: {r: 0.07504058, g: 1, b: 0, a: 1}
+    - Data: {fileID: 7433659528425351053, guid: e9dd7c059c7833b4f9f078192b12819a, type: 3}
+      DefaultColor: {r: 0, g: 1, b: 0.042280674, a: 1}
+      BrushedColor: {r: 1, g: 0.27134597, b: 0, a: 1}
