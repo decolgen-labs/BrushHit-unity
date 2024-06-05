@@ -19,7 +19,7 @@ io.use((socket, next) => {
 });
 
 var deltaTime = 0;
-var _position1, _position2;
+var _position1 = {'x': 0, 'y' : 0}, _position2 = {'x': 0, 'y' : 0};
 io.on('connection', socket => {
   console.log('connection');
 
@@ -48,28 +48,29 @@ io.on('connection', socket => {
     deltaTime = new Date().getTime();
   });
 
-  socket.on('update brush position', (position1, position2) => {
-    _position1 = position1;
-    _position2 = position2;
+  socket.on('updateBrushPosition', (x1, y1, x2, y2) => {
+    _position1 = { x: x1, y: y1 };
+    _position2 = { x: x2, y: y2 };
   });
 
-  socket.on('add rubber', (data) => {
+  socket.on('addRubber', (data) => {
     addToRubberList();
   });
 
-  socket.on('is collided', (index, position) => {
-    socket.emit('update', {data: isBetweenTwoPoint(index, position)})
+  socket.on('isCollided', (index, positionX, positionY) => {
+    socket.emit('isCollied', {data: isBetweenTwoPoint(index, {x: positionX, y: positionY})});
   });
 });
 
 var rubberNumber = 0;
 var rubberDic = {};
+
 function addToRubberList()
 {
   rubberNumber++;
 }
 
-function isBetweenTwoPoint(index, position)
+function isBetweenTwoPoint(index, position) 
 {
   var check = false;
   var checkX = (position.x - _position1.x) / (_position2.x - _position1.x);

@@ -1078,7 +1078,7 @@ GameObject:
   - component: {fileID: 1134111735}
   - component: {fileID: 1134111736}
   m_Layer: 0
-  m_Name: SocketManager
+  m_Name: SocketConnectManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1108,9 +1108,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 1134111734}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e6b62b3a850345c4b96b11827b77026f, type: 3}
+  m_Script: {fileID: 11500000, guid: 28c5abce04aa2c34eb9490e5404d7dff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _dontDestroyOnLoad: 0
 --- !u!1 &1197900182
 GameObject:
   m_ObjectHideFlags: 0
@@ -1495,7 +1496,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8749416160444272221, guid: 2c5a37df5b754eb4e9321199ac8ef61c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 0
+      value: 85
       objectReference: {fileID: 0}
     - target: {fileID: 8749416160444272221, guid: 2c5a37df5b754eb4e9321199ac8ef61c, type: 3}
       propertyPath: m_AnchoredPosition.y

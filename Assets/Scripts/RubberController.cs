@@ -13,6 +13,7 @@ public class RubberController : MonoBehaviour
     //The Joint of rubber to platform
     [SerializeField] HingeJoint _hingeJoint;
 
+    public int index;
     private GameManager _gameManager;
     private Color _defaultColor;
     private Color _brushedColor;
@@ -50,6 +51,7 @@ public class RubberController : MonoBehaviour
     //Check the collision and Set color, Create VFX
     private void OnCollisionEnter(Collision collision)
     {
+        SocketConnectManager.Instance.IsBetweenBrush(index, this.transform.position);
         Color color = gameObject.GetComponent<Renderer>().material.color;
         if ((collision.gameObject.CompareTag("Brush") || collision.contacts[0].otherCollider.transform.gameObject.CompareTag("Brush")) && color != _brushedColor)
         {
