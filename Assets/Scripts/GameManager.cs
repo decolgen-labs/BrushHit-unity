@@ -96,6 +96,13 @@ public class GameManager : MonoBehaviour
             _isTouching = false;
             IsTouchingDown = false;
         }
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            WinGame();
+            return;
+        }
+#endif
 
         if (IsPlaying)
         {
