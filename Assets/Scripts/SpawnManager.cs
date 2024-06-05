@@ -20,8 +20,9 @@ public class SpawnManager : MonoBehaviour
         rubbers.transform.position = Vector3.zero;
 
         //Find all platform in level
-        GameObject[] platforms = GameObject.FindGameObjectsWithTag("Platform");
-        foreach (GameObject platform in platforms)
+        
+        PlatformController[] platforms = GameObject.FindObjectsByType<PlatformController>(sortMode: FindObjectsSortMode.None);
+        foreach (var platform in platforms)
         {
             Rigidbody platformRb = platform.GetComponent<Rigidbody>();
             //Get the size of rubber
