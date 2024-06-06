@@ -74,7 +74,7 @@ public class SocketIOUnity : SocketIO
     /// Emits an event to the socket
     /// </summary>
     /// <param name="eventName"></param>
-    /// <param name="data">Any other parameters can be included. All serializable datastructures are supported, including byte[]</param>
+    /// <param name="data">Any other parameters can be included. All serializable data structures are supported, including byte[]</param>
     /// <returns></returns>
     public void Emit(string eventName, params object[] data)
     {

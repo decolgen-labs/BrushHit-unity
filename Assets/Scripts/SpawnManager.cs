@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-//This script used to spawn all rubbers on flatform and power-up prefab
+//This script used to spawn all rubbers on platform and power-up prefab
 //rubber: all the small things on the platform you see in levels when you control the brush go through and change their color to get point
 public class SpawnManager : MonoBehaviour
 {
@@ -11,6 +11,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] GameObject _freezePrefab;
     [SerializeField] GameObject _immortalPrefab;
     [SerializeField] GameManager _gameManager;
+    List<GameObject> _rubbers = new List<GameObject>();
 
     public void SpawnRubbers()
     {
@@ -44,11 +45,13 @@ public class SpawnManager : MonoBehaviour
                 {
                     Vector3 position = new Vector3(i, 0.5f, j);
                     GameObject rubber = Instantiate(_spawnPrefab, position, Quaternion.identity);
+                    _rubbers.Add(rubber);
                     RubberController rubberController = rubber.GetComponent<RubberController>();
                     rubberController.SetJoin(platformRb);
                     rubberController.SetColor(_gameManager.DefaultColor);
                     rubberController.UpdateColor(_gameManager.DefaultColor, _gameManager.BrushedColor);
                     rubber.transform.parent = rubbers.transform;
+                    rubber.GetComponent<RubberController>().index = _rubbers.Count -1;
                 }
             }
         }

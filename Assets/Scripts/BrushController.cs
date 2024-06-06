@@ -79,6 +79,7 @@ public class BrushController : MonoBehaviour
                 }
             }
         }
+        SocketConnectManager.Instance.UpdateBrushPosition(_brush[0].transform.position, _brush[1].transform.position);
     }
 
     public void UpdateTag(string tag)
