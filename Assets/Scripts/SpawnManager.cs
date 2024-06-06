@@ -15,6 +15,7 @@ public class SpawnManager : MonoBehaviour
 
     public void SpawnRubbers()
     {
+        _rubbers.Clear();
         GameObject rubbers = new GameObject();
         rubbers.transform.SetParent(_gameManager._levelData.transform);
         rubbers.name = "Rubbers";
@@ -22,7 +23,7 @@ public class SpawnManager : MonoBehaviour
 
         //Find all platform in level
         
-        PlatformController[] platforms = GameObject.FindObjectsByType<PlatformController>(sortMode: FindObjectsSortMode.None);
+        GameObject[] platforms = GameObject.FindGameObjectsWithTag("Platform");
         foreach (var platform in platforms)
         {
             Rigidbody platformRb = platform.GetComponent<Rigidbody>();
@@ -45,13 +46,14 @@ public class SpawnManager : MonoBehaviour
                 {
                     Vector3 position = new Vector3(i, 0.5f, j);
                     GameObject rubber = Instantiate(_spawnPrefab, position, Quaternion.identity);
-                    _rubbers.Add(rubber);
                     RubberController rubberController = rubber.GetComponent<RubberController>();
                     rubberController.SetJoin(platformRb);
                     rubberController.SetColor(_gameManager.DefaultColor);
                     rubberController.UpdateColor(_gameManager.DefaultColor, _gameManager.BrushedColor);
                     rubber.transform.parent = rubbers.transform;
-                    rubber.GetComponent<RubberController>().index = _rubbers.Count -1;
+                    _rubbers.Add(rubber);
+                    rubber.GetComponent<RubberController>().index = _rubbers.Count - 1;
+                    SocketConnectManager.Instance.AddNewRunner(_rubbers.Count - 1, rubber.transform.position);
                 }
             }
         }

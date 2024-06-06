@@ -29,12 +29,13 @@ public class BrushController : MonoBehaviour
 
     public bool _isTransition { get; private set; }
 
+    private Vector3 _rotateVector;
+
     void Awake()
     {
         _gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         _camera = GameObject.FindAnyObjectByType<CameraController>();
-        _animator = GetComponent<Animator>();
         SetMeshMaterial(_brushMaterial);
     }
 
@@ -54,6 +55,8 @@ public class BrushController : MonoBehaviour
             transform.position = _spawnPosition + _offset;
             transform.eulerAngles = Vector3.zero;
         }
+        SocketConnectManager.Instance.UpdateBrushRadius(2);
+        SocketConnectManager.Instance.UpdateBrushPosition(_mainBrush.transform.position, GetRotateBrush().transform.position);
     }
 
     //Get input the control the brush movement, if the player go out the platform, they lose
@@ -79,7 +82,13 @@ public class BrushController : MonoBehaviour
                 }
             }
         }
-        SocketConnectManager.Instance.UpdateBrushPosition(_brush[0].transform.position, _brush[1].transform.position);
+        (Vector3 mainBrush, Vector3 otherBrush) = SocketConnectManager.Instance.GetBrushPosition();
+        // Debug.Log("mainBrush: " + mainBrush);
+        // Debug.Log("otherBrush: " + otherBrush);
+        _mainBrush.transform.position = mainBrush;
+        GetRotateBrush().transform.position = otherBrush;
+
+        _rotateVector = (otherBrush - mainBrush).normalized;
     }
 
     public void UpdateTag(string tag)
@@ -113,10 +122,7 @@ public class BrushController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (!_isTransition)
-        {
-            transform.RotateAround(_mainBrush.transform.position, Vector3.up * _direction, Time.deltaTime * _speed);
-        }
+        transform.transform.forward = _rotateVector;
     }
 
     public void UpdateMainBrush()
@@ -141,12 +147,11 @@ public class BrushController : MonoBehaviour
     public void IsSpawning(bool spawn)
     {
         StartCoroutine(EnableAnimators());
-        string nameTrigger = "Spawn";
-        if (!spawn)
-        {
-            nameTrigger = "Dispawn";
-        }
-        _animator.SetTrigger(nameTrigger);
+        // string nameTrigger = "Spawn";
+        // if (!spawn)
+        // {
+        //     nameTrigger = "Dispawn";
+        // }
     }
 
     //Add point to grow up
@@ -168,11 +173,11 @@ public class BrushController : MonoBehaviour
     {
         if(_brushIndex == 0)
         {
-            _animator.SetTrigger("Grow1");
+            // _animator.SetTrigger("Grow1");
             _brushVFX.Play();
         } else {
 
-            _animator.SetTrigger("Grow");
+            // _animator.SetTrigger("Grow");
             _brushVFX.Play();
         }
     }
