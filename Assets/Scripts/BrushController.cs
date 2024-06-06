@@ -79,6 +79,7 @@ public class BrushController : MonoBehaviour
                 }
             }
         }
+        SocketConnectManager.Instance.UpdateBrushPosition(_brush[0].transform.position, _brush[1].transform.position);
     }
 
     public void UpdateTag(string tag)
@@ -115,7 +116,6 @@ public class BrushController : MonoBehaviour
         if (!_isTransition)
         {
             transform.RotateAround(_mainBrush.transform.position, Vector3.up * _direction, Time.deltaTime * _speed);
-            SocketConnectManager.Instance.UpdateBrushPosition(_brush[0].transform.position, _brush[1].transform.position);
         }
     }
 

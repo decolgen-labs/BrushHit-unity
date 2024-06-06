@@ -1,12 +1,11 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using NOOD;
 using SocketIOClient;
 using SocketIOClient.Newtonsoft.Json;
-using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
+using Newtonsoft.Json.Linq;
 
 using Debug = System.Diagnostics.Debug;
 
@@ -58,7 +57,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 
         socket.OnAnyInUnityThread((name, response) =>
         {
-            UnityEngine.Debug.Log(name + " " + response.ToString());
+            // UnityEngine.Debug.Log(name + " " + response.ToString());
         });
     }
 
@@ -72,8 +71,17 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 
     }
 
-    public void IsBetweenBrush(int index, Vector3 position)
+    public bool IsBetweenBrush(int index, Vector3 position, Action onTrue)
     {
+        bool result = false;
         socket.Emit(SocketEnum.isCollided.ToString(), new object[] { index, position.x, position.z });
+        socket.OnUnityThread(SocketEnum.isCollided.ToString(), (data) =>
+        {
+            result = data.GetValue<SocketBooleanObject>(0).data;
+            if(result)
+                onTrue?.Invoke();
+        });
+        UnityEngine.Debug.Log("Final result: " + result);
+        return result;
     }
 }
