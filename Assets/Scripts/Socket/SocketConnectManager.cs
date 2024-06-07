@@ -56,7 +56,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         Debug.Print("Connecting...");
         socket.Connect();
 
-        socket.On(SocketEnum.isCollided.ToString(), (data) =>
+        socket.On(SocketEnum.updateRubberIndexList.ToString(), (data) =>
         {
             _completeRubberIndexArray = data.GetValue<SocketCompleteRubberArray>().indexArray;
             onValidRubberIndex?.Invoke(ConvertToIntArray(_completeRubberIndexArray));

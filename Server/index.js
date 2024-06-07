@@ -41,12 +41,10 @@ io.on('connection', socket => {
   socket.on('update', (data) => {
     _deltaTime = (new Date().getTime() - currentTime) * 0.001;
     socket.emit('update', {deltaTime: _deltaTime});
-    angle = _deltaTime * _rotateSpeed; 
-    _position2 = rotatePointWithRadius(_position2.x, _position2.y, _position1.x, _position1.y, angle, _radius);
 
-    calculateValidRubber();
+    calculateInUpdate();
     // Return value to the game
-    socket.emit('isCollided', { indexArray: _completeRubberIndexList});
+    socket.emit('updateRubberIndexList', { indexArray: _completeRubberIndexList});
     socket.emit('updateBrushPosition', { mainBrush: _position1, otherBrush: _position2 });
     currentTime = new Date().getTime();
   });
@@ -76,6 +74,16 @@ io.on('connection', socket => {
     socket.emit('isCollided', { indexArray: _completeRubberIndexList});
   });
 });
+
+function calculateInUpdate()
+{
+  // Calculate all valid rubber at this frame
+  calculateValidRubber();
+  // Calculate angle
+  var angle = _deltaTime * _rotateSpeed; 
+  // Rotate the second brush around main brush
+  _position2 = rotatePointWithRadius(_position2.x, _position2.y, _position1.x, _position1.y, angle, _radius);
+}
 
 function addNewRubber(index, position)
 {

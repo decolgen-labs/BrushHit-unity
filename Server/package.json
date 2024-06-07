@@ -9,6 +9,6 @@
   "author": "",
   "dependencies": {
     "cjs": "^0.0.11",
-    "socket.io": "^4.2.0"
+    "socket.io": "^4.7.5"
   }
 }
