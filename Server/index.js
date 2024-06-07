@@ -18,41 +18,34 @@ io.use((socket, next) => {
     }
 });
 
-var deltaTime = 0;
-var _position1 = {'x': 0, 'y' : 0}, _position2 = {'x': 0, 'y' : 0};
+var _deltaTime = 0;
+var _mainBrush = {'x': 0, 'y' : 0}, _otherBrush = {'x': 0, 'y' : 0};
+var _currentTime = 0;
+var _rotateSpeed = 1.25;
+var _radius = 4;
+
 io.on('connection', socket => {
   console.log('connection');
 
-  deltaTime = new Date().getTime();
+  _currentTime = new Date().getTime();
   setTimeout(() => {
     socket.emit('connection', {date: new Date().getTime(), data: "Hello Unity"})
   }, 1000);
 
-  socket.on('hello', (data) => {
-    console.log('hello', data);
-    socket.emit('hello', {date: new Date().getTime(), data: data});
-  });
-
-  socket.on('spin', (data) => {
-    console.log('spin');
-    socket.emit('spin', {date: new Date().getTime(), data: data});
-  });
-
-  socket.on('class', (data) => {
-    console.log('class', data);
-    socket.emit('class', {date: new Date().getTime(), data: data});
-  });
-
   socket.on('update', (data) => {
-    socket.emit('update', {name: 'DeltaTime: ', data: (new Date().getTime() - deltaTime) *0.001 });
-    deltaTime = new Date().getTime();
+    // Calculate delta time
+    _deltaTime = (new Date().getTime() - _currentTime) * 0.01;
+
+    updateCalculate();
+    socket.emit('update', { data: _deltaTime });
+    socket.emit('updateBrushPosition', {mainBrush: _mainBrush, otherBrush: _otherBrush});
+    _currentTime = new Date().getTime();
   });
 
   // x, y is string with format (0.00)
   socket.on('updateBrushPosition', (x1, y1, x2, y2) => {
-    _position1 = { x: x1, y: y1 };
-    _position2 = { x: x2, y: y2 };
-    socket.emit('updateBrushPosition', _position1, _position2);
+    _mainBrush = { x: x1, y: y1 };
+    _otherBrush = { x: x2, y: y2 };
   });
 
   socket.on('addRubber', (data) => {
@@ -69,18 +62,56 @@ io.on('connection', socket => {
 var rubberNumber = 0;
 var rubberDic = {};
 
+function updateCalculate()
+{
+  rotateBrush();
+}
+
 function addToRubberList()
 {
   rubberNumber++;
 }
 
+function rotateBrush()
+{
+  let angle = _deltaTime * _rotateSpeed;
+  _otherBrush = rotatePointWithRadius(_otherBrush.x, _otherBrush.y, _mainBrush.x, _mainBrush.y, angle, _radius)
+}
+
+function rotatePointWithRadius(px, py, cx, cy, angle, radius) {
+  // Translate point to the origin
+  let translatedX = px - cx;
+  let translatedY = py - cy;
+
+  // Calculate the original distance from the center
+  let originalDistance = Math.sqrt(translatedX * translatedX + translatedY * translatedY);
+
+  // Calculate the unit vector
+  let unitX = translatedX / originalDistance;
+  let unitY = translatedY / originalDistance;
+
+  // Scale the unit vector by the new radius
+  let scaledX = unitX * radius;
+  let scaledY = unitY * radius;
+
+  // Apply the rotation
+  let rotatedX = scaledX * Math.cos(angle) - scaledY * Math.sin(angle);
+  let rotatedY = scaledX * Math.sin(angle) + scaledY * Math.cos(angle);
+
+  // Translate the point back
+  let finalX = rotatedX + cx;
+  let finalY = rotatedY + cy;
+
+  return { x: finalX, y: finalY };
+}
+
 function isBetweenTwoPoint(index, position) 
 {
   var check = false;
-  var dxc = position.x - _position1.x;
-  var dyc = position.y - _position1.y;
-  var dxl = _position2.x - _position1.x;
-  var dyl = _position2.y - _position1.y;
+  var dxc = position.x - _mainBrush.x;
+  var dyc = position.y - _mainBrush.y;
+  var dxl = _otherBrush.x - _mainBrush.x;
+  var dyl = _otherBrush.y - _mainBrush.y;
   var cross = dxc * dyl - dyc * dxl;
 
   // console.log('positionX: ' + position.x + ' positionY: ' + position.y);
@@ -88,33 +119,20 @@ function isBetweenTwoPoint(index, position)
   if (parseFloat(cross.toFixed(0)) == 0) {
     if (Math.abs(dxl) >= Math.abs(dyl)) {
       check = dxl > 0 ?
-        _position1.x <= position.x && position.x <= _position2.x :
-        _position2.x <= position.x && position.x <= _position1.x;
+        _mainBrush.x <= position.x && position.x <= _otherBrush.x :
+        _otherBrush.x <= position.x && position.x <= _mainBrush.x;
     }
     else {
       check = dyl > 0 ?
-        _position1.y <= position.y && position.y <= _position2.y :
-        _position2.y <= position.y && position.y <= _position1.y;
+        _mainBrush.y <= position.y && position.y <= _otherBrush.y :
+        _otherBrush.y <= position.y && position.y <= _mainBrush.y;
     }
     console.log(check);
   }
   else{
     console.log('false');
   }
-  // Check if in the middle
-  // if (checkX == checkY && checkX > 0 && checkX < 1)
-  // {
-  //   check = true;
-  // }
 
-  if (check == true)
-  {
-    // in the middle of the line
-    // rubberDic.push({
-    //   index: index,
-    //   position: position
-    // });
-  }
   return check;
 }
 
