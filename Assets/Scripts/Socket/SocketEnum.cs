@@ -4,5 +4,6 @@ public enum SocketEnum
     updateBrushPosition,
     addRubber,
     isCollided,
-    updateBrushRadius
+    updateBrushRadius,
+    playerTouch
 }

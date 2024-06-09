@@ -21,8 +21,9 @@ io.use((socket, next) => {
 var _deltaTime = 0;
 var _mainBrush = {'x': 0, 'y' : 0}, _otherBrush = {'x': 0, 'y' : 0};
 var _currentTime = 0;
-var _rotateSpeed = 1.25;
+var _rotateSpeed = 0.5;
 var _radius = 4;
+var _direction = 1;
 
 io.on('connection', socket => {
   console.log('connection');
@@ -52,6 +53,10 @@ io.on('connection', socket => {
     addToRubberList();
   });
 
+  socket.on('playerTouch', (data) => {
+    playerTouch();
+  });
+
   // position is string with format (0.00)
   socket.on('isCollided', (index, positionX, positionY) => {
     var check = isBetweenTwoPoint(index, {x: positionX, y: positionY});
@@ -78,6 +83,14 @@ function rotateBrush()
   _otherBrush = rotatePointWithRadius(_otherBrush.x, _otherBrush.y, _mainBrush.x, _mainBrush.y, angle, _radius)
 }
 
+function playerTouch()
+{
+  // let temp = _mainBrush;
+  // _mainBrush = _otherBrush;
+  // _otherBrush = temp;
+  _direction *= -1;
+}
+
 function rotatePointWithRadius(px, py, cx, cy, angle, radius) {
   // Translate point to the origin
   let translatedX = px - cx;
@@ -95,8 +108,9 @@ function rotatePointWithRadius(px, py, cx, cy, angle, radius) {
   let scaledY = unitY * radius;
 
   // Apply the rotation
-  let rotatedX = scaledX * Math.cos(angle) - scaledY * Math.sin(angle);
-  let rotatedY = scaledX * Math.sin(angle) + scaledY * Math.cos(angle);
+  let realAngle = angle * _direction;
+  let rotatedX = scaledX * Math.cos(realAngle) - scaledY * Math.sin(realAngle);
+  let rotatedY = scaledX * Math.sin(realAngle) + scaledY * Math.cos(realAngle);
 
   // Translate the point back
   let finalX = rotatedX + cx;

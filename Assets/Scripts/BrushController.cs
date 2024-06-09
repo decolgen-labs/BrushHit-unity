@@ -60,27 +60,29 @@ public class BrushController : MonoBehaviour
             if (_gameManager.IsTouchingDown && !_gameManager.CheckClickUI())
             {
                 UpdateMainBrush();
-                if (!_gameManager.IsImmortal)
-                {
-                    GameObject thingBelow = CheckBelow();
-                    if (thingBelow == null || !thingBelow.CompareTag("Platform"))
-                    {
-                        _gameManager.LoseGame();
-                        transform.SetParent(null);
-                    }
-                    else
-                    {
-                        transform.SetParent(thingBelow.transform.parent);
-                    }
-                }
+                // if (!_gameManager.IsImmortal)
+                // {
+                //     GameObject thingBelow = CheckBelow();
+                //     if (thingBelow == null || !thingBelow.CompareTag("Platform"))
+                //     {
+                //         _gameManager.LoseGame();
+                //         transform.SetParent(null);
+                //     }
+                //     else
+                //     {
+                //         transform.SetParent(thingBelow.transform.parent);
+                //     }
+                // }
             }
         }
+        (Vector3 mainBrush, Vector3 otherBrush) = SocketConnectManager.Instance.GetBrushPosition();
+        _mainBrush.transform.position = mainBrush;
+        this.transform.position = mainBrush;
+        GetRotateBrush().transform.position = otherBrush;
     }
     void FixedUpdate()
     {
         (Vector3 mainBrush, Vector3 otherBrush) = SocketConnectManager.Instance.GetBrushPosition();
-        _mainBrush.transform.position = mainBrush;
-        GetRotateBrush().transform.position = otherBrush;
         Vector3 rotateVector = (otherBrush - mainBrush).normalized;
         this.transform.forward = rotateVector;
     }
@@ -122,6 +124,7 @@ public class BrushController : MonoBehaviour
         _camera.UpdateTarget(_mainBrush);
 
         _audioSource.PlayOneShot(_brushSFX, 1f);
+        SocketConnectManager.Instance.UpdateBrushPosition(_mainBrush.transform.position, GetRotateBrush().transform.position);
     }
 
     IEnumerator EnableAnimators()

@@ -9,7 +9,7 @@ public class CameraController : MonoBehaviour
     private GameObject _target;
 
     // Move the camera follow the player
-    void Update()
+    void LateUpdate()
     {
         if(_target != null)
         {

@@ -5,10 +5,8 @@ using SocketIOClient;
 using SocketIOClient.Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
-using Newtonsoft.Json.Linq;
 
 using Debug = System.Diagnostics.Debug;
-using System.Net.Sockets;
 
 public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 {
@@ -61,7 +59,6 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         socket.On(SocketEnum.updateBrushPosition.ToString(), (data) =>
         {
             _brushTuple = data.GetValue<SocketBrushPositionData>().GetTuple();
-            UnityEngine.Debug.Log("updateBrushPosition: " + data.GetValue<SocketBrushPositionData>().GetTuple());
         });
 
         socket.OnAnyInUnityThread((name, response) =>
@@ -83,8 +80,11 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     {
         Vector3 mainBrush = new Vector3(_brushTuple.mainBrush.x, _brushHeigh, _brushTuple.mainBrush.y);
         Vector3 otherBrush = new Vector3(_brushTuple.otherBrush.x, _brushHeigh, _brushTuple.otherBrush.y);
-        UnityEngine.Debug.Log(mainBrush + " otherBrush: " + otherBrush);
         return (mainBrush, otherBrush); 
+    }
+    public void PlayerInput()
+    {
+        socket.Emit(SocketEnum.playerTouch.ToString());
     }
 
     public void CheckWin()
