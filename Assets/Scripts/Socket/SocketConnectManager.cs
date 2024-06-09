@@ -5,13 +5,14 @@ using SocketIOClient;
 using SocketIOClient.Newtonsoft.Json;
 using UnityEngine;
 using UnityEngine.UI;
-using Newtonsoft.Json.Linq;
 
 using Debug = System.Diagnostics.Debug;
 
 public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 {
     public SocketIOUnity socket;
+    public (Vector2 mainBrush, Vector2 otherBrush) _brushTuple;
+    public float _brushHeigh;
 
     protected override void ChildAwake()
     {
@@ -55,15 +56,35 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         Debug.Print("Connecting...");
         socket.Connect();
 
+        socket.On(SocketEnum.updateBrushPosition.ToString(), (data) =>
+        {
+            _brushTuple = data.GetValue<SocketBrushPositionData>().GetTuple();
+        });
+
         socket.OnAnyInUnityThread((name, response) =>
         {
             // UnityEngine.Debug.Log(name + " " + response.ToString());
         });
     }
-
-    public void UpdateBrushPosition(Vector3 position1, Vector3 position2)
+    void Update()
     {
-        socket.Emit(SocketEnum.updateBrushPosition.ToString(), new object[] { position1.x, position1.z, position2.x, position2.z });
+        socket.Emit(SocketEnum.update.ToString());    
+    }
+
+    public void UpdateBrushPosition(Vector3 mainBrush, Vector3 otherBrush)
+    {
+        _brushHeigh = mainBrush.y;
+        socket.Emit(SocketEnum.updateBrushPosition.ToString(), new object[] { mainBrush.x, mainBrush.z, otherBrush.x, otherBrush.z });
+    }
+    public (Vector3 mainBrush, Vector3 otherBrush) GetBrushPosition()
+    {
+        Vector3 mainBrush = new Vector3(_brushTuple.mainBrush.x, _brushHeigh, _brushTuple.mainBrush.y);
+        Vector3 otherBrush = new Vector3(_brushTuple.otherBrush.x, _brushHeigh, _brushTuple.otherBrush.y);
+        return (mainBrush, otherBrush); 
+    }
+    public void PlayerInput()
+    {
+        socket.Emit(SocketEnum.playerTouch.ToString());
     }
 
     public void CheckWin()

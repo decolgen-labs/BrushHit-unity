@@ -976,10 +976,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2605509274800630961, guid: ff1b93305c9bdd444bb8019f6a4943cb, type: 3}
-      propertyPath: m_RootOrder
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2605509274800630961, guid: ff1b93305c9bdd444bb8019f6a4943cb, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
       objectReference: {fileID: 0}
@@ -1022,10 +1018,6 @@ PrefabInstance:
     - target: {fileID: 3242473494596063662, guid: ff1b93305c9bdd444bb8019f6a4943cb, type: 3}
       propertyPath: m_Name
       value: BrushTool
-      objectReference: {fileID: 0}
-    - target: {fileID: 3242473494596063662, guid: ff1b93305c9bdd444bb8019f6a4943cb, type: 3}
-      propertyPath: m_TagString
-      value: Brush
       objectReference: {fileID: 0}
     - target: {fileID: 7480871225732829780, guid: ff1b93305c9bdd444bb8019f6a4943cb, type: 3}
       propertyPath: _audioSource
@@ -1112,6 +1104,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dontDestroyOnLoad: 0
+  _brushHeigh: 0
 --- !u!1 &1197900182
 GameObject:
   m_ObjectHideFlags: 0
@@ -1496,7 +1489,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8749416160444272221, guid: 2c5a37df5b754eb4e9321199ac8ef61c, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 85
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8749416160444272221, guid: 2c5a37df5b754eb4e9321199ac8ef61c, type: 3}
       propertyPath: m_AnchoredPosition.y
