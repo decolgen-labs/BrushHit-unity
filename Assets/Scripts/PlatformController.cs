@@ -42,7 +42,7 @@ public class PlatformController : MonoBehaviour
         }
     }
 
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         //if this is a moving platform and the game is not freezing by power-up, moving the platform
         if(IsMoving && !_gameManager.IsFreezing)

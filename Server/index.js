@@ -1,6 +1,6 @@
 'use strict';
 
-
+const {add_two_vectors, subtract_two_vectors} = require('./Vector');
 const {change_direction, rotatePointWithRadius, distance_between_two_point} = require('./brush');
 const http = require('http');
 const socket = require('socket.io');
@@ -25,6 +25,7 @@ var _mainBrush = {'x': 0, 'y' : 0}, _otherBrush = {'x': 0, 'y' : 0};
 var _currentTime = 0;
 var _rotateSpeed = 0.2;
 var _radius = 4;
+var _platformOffset = {'x': 0, 'y' : 0};
 
 io.on('connection', socket => {
   console.log('connection');
@@ -67,6 +68,11 @@ io.on('connection', socket => {
   socket.on('isTrue', (positionX, positionY) => {
     console.log(check_true({ x: positionX, y: positionY }));
   });
+
+  socket.on('updatePlatformPosition', (positionX, positionY) => {
+    _platformOffset = {x: positionX, y: positionY };
+    console.log(_platformOffset);
+  });
 })
 
 var rubberNumber = 0;
@@ -75,6 +81,7 @@ var rubberDic = {};
 function updateCalculate()
 {
   rotateBrush();
+  _mainBrush = add_two_vectors(_mainBrush.x, _mainBrush.y, _platformOffset.x, _platformOffset.y);
 }
 
 function rotateBrush()
@@ -88,20 +95,14 @@ function addToRubberList()
   rubberNumber++;
 }
 
-
 function playerTouch()
 {
-  // let temp = _mainBrush;
-  // _mainBrush = _otherBrush;
-  // _otherBrush = temp;
   change_direction();
 }
 
 function check_true(position)
 {
   let distance = distance_between_two_point(position.x, position.y, _mainBrush.x, _mainBrush.y);
-  console.log('position: ' + position.x + ' ' + position.y);
-  console.log('main: ' + _mainBrush.x + ' ' + _mainBrush.y);
   return distance < _radius + 1;
 }
 

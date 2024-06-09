@@ -76,6 +76,10 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         _brushHeigh = mainBrush.y;
         socket.Emit(SocketEnum.updateBrushPosition.ToString(), new object[] { mainBrush.x, mainBrush.z, otherBrush.x, otherBrush.z });
     }
+    public void UpdatePlatformOffset(Vector3 position)
+    {
+        socket.Emit(SocketEnum.updatePlatformPosition.ToString(), new object[] { position.x, position.z });
+    }
     public (Vector3 mainBrush, Vector3 otherBrush) GetBrushPosition()
     {
         Vector3 mainBrush = new Vector3(_brushTuple.mainBrush.x, _brushHeigh, _brushTuple.mainBrush.y);
