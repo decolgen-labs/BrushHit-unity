@@ -1,5 +1,7 @@
 'use strict';
 
+
+const {change_direction, rotatePointWithRadius, distance_between_two_point} = require('./brush');
 const http = require('http');
 const socket = require('socket.io');
 const server = http.createServer();
@@ -21,16 +23,15 @@ io.use((socket, next) => {
 var _deltaTime = 0;
 var _mainBrush = {'x': 0, 'y' : 0}, _otherBrush = {'x': 0, 'y' : 0};
 var _currentTime = 0;
-var _rotateSpeed = 0.5;
+var _rotateSpeed = 0.2;
 var _radius = 4;
-var _direction = 1;
 
 io.on('connection', socket => {
   console.log('connection');
 
   _currentTime = new Date().getTime();
   setTimeout(() => {
-    socket.emit('connection', {date: new Date().getTime(), data: "Hello Unity"})
+    socket.emit('connection', { date: new Date().getTime(), data: "Hello Unity" })
   }, 1000);
 
   socket.on('update', (data) => {
@@ -39,7 +40,7 @@ io.on('connection', socket => {
 
     updateCalculate();
     socket.emit('update', { data: _deltaTime });
-    socket.emit('updateBrushPosition', {mainBrush: _mainBrush, otherBrush: _otherBrush});
+    socket.emit('updateBrushPosition', { mainBrush: _mainBrush, otherBrush: _otherBrush });
     _currentTime = new Date().getTime();
   });
 
@@ -59,10 +60,14 @@ io.on('connection', socket => {
 
   // position is string with format (0.00)
   socket.on('isCollided', (index, positionX, positionY) => {
-    var check = isBetweenTwoPoint(index, {x: positionX, y: positionY});
-    socket.emit('isCollided', {data: check});
+    var check = isBetweenTwoPoint(index, { x: positionX, y: positionY });
+    socket.emit('isCollided', { data: check });
   });
-});
+
+  socket.on('isTrue', (positionX, positionY) => {
+    console.log(check_true({ x: positionX, y: positionY }));
+  });
+})
 
 var rubberNumber = 0;
 var rubberDic = {};
@@ -72,82 +77,32 @@ function updateCalculate()
   rotateBrush();
 }
 
-function addToRubberList()
-{
-  rubberNumber++;
-}
-
 function rotateBrush()
 {
   let angle = _deltaTime * _rotateSpeed;
   _otherBrush = rotatePointWithRadius(_otherBrush.x, _otherBrush.y, _mainBrush.x, _mainBrush.y, angle, _radius)
 }
 
+function addToRubberList()
+{
+  rubberNumber++;
+}
+
+
 function playerTouch()
 {
   // let temp = _mainBrush;
   // _mainBrush = _otherBrush;
   // _otherBrush = temp;
-  _direction *= -1;
+  change_direction();
 }
 
-function rotatePointWithRadius(px, py, cx, cy, angle, radius) {
-  // Translate point to the origin
-  let translatedX = px - cx;
-  let translatedY = py - cy;
-
-  // Calculate the original distance from the center
-  let originalDistance = Math.sqrt(translatedX * translatedX + translatedY * translatedY);
-
-  // Calculate the unit vector
-  let unitX = translatedX / originalDistance;
-  let unitY = translatedY / originalDistance;
-
-  // Scale the unit vector by the new radius
-  let scaledX = unitX * radius;
-  let scaledY = unitY * radius;
-
-  // Apply the rotation
-  let realAngle = angle * _direction;
-  let rotatedX = scaledX * Math.cos(realAngle) - scaledY * Math.sin(realAngle);
-  let rotatedY = scaledX * Math.sin(realAngle) + scaledY * Math.cos(realAngle);
-
-  // Translate the point back
-  let finalX = rotatedX + cx;
-  let finalY = rotatedY + cy;
-
-  return { x: finalX, y: finalY };
-}
-
-function isBetweenTwoPoint(index, position) 
+function check_true(position)
 {
-  var check = false;
-  var dxc = position.x - _mainBrush.x;
-  var dyc = position.y - _mainBrush.y;
-  var dxl = _otherBrush.x - _mainBrush.x;
-  var dyl = _otherBrush.y - _mainBrush.y;
-  var cross = dxc * dyl - dyc * dxl;
-
-  // console.log('positionX: ' + position.x + ' positionY: ' + position.y);
-  // console.log(cross);
-  if (parseFloat(cross.toFixed(0)) == 0) {
-    if (Math.abs(dxl) >= Math.abs(dyl)) {
-      check = dxl > 0 ?
-        _mainBrush.x <= position.x && position.x <= _otherBrush.x :
-        _otherBrush.x <= position.x && position.x <= _mainBrush.x;
-    }
-    else {
-      check = dyl > 0 ?
-        _mainBrush.y <= position.y && position.y <= _otherBrush.y :
-        _otherBrush.y <= position.y && position.y <= _mainBrush.y;
-    }
-    console.log(check);
-  }
-  else{
-    console.log('false');
-  }
-
-  return check;
+  let distance = distance_between_two_point(position.x, position.y, _mainBrush.x, _mainBrush.y);
+  console.log('position: ' + position.x + ' ' + position.y);
+  console.log('main: ' + _mainBrush.x + ' ' + _mainBrush.y);
+  return distance < _radius + 1;
 }
 
 function checkWin()
@@ -158,3 +113,5 @@ function checkWin()
 server.listen(port, () => {
   console.log('listening on *:' + port);
 });
+
+module.exports = {_deltaTime}

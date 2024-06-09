@@ -60,6 +60,7 @@ public class BrushController : MonoBehaviour
             if (_gameManager.IsTouchingDown && !_gameManager.CheckClickUI())
             {
                 UpdateMainBrush();
+                SocketConnectManager.Instance.PlayerInput();
                 // if (!_gameManager.IsImmortal)
                 // {
                 //     GameObject thingBelow = CheckBelow();
@@ -75,16 +76,18 @@ public class BrushController : MonoBehaviour
                 // }
             }
         }
+        // Update position
         (Vector3 mainBrush, Vector3 otherBrush) = SocketConnectManager.Instance.GetBrushPosition();
+        GetRotateBrush().transform.position = otherBrush;
         _mainBrush.transform.position = mainBrush;
         this.transform.position = mainBrush;
-        GetRotateBrush().transform.position = otherBrush;
+
+        // Update rotation
+        Vector3 rotateVector = (otherBrush - mainBrush).normalized;
+        this.transform.forward = rotateVector;
     }
     void FixedUpdate()
     {
-        (Vector3 mainBrush, Vector3 otherBrush) = SocketConnectManager.Instance.GetBrushPosition();
-        Vector3 rotateVector = (otherBrush - mainBrush).normalized;
-        this.transform.forward = rotateVector;
     }
 
     public void UpdateTag(string tag)

@@ -22,7 +22,7 @@ public class SpawnManager : MonoBehaviour
 
         //Find all platform in level
         
-        PlatformController[] platforms = GameObject.FindObjectsByType<PlatformController>(sortMode: FindObjectsSortMode.None);
+        GameObject[] platforms = GameObject.FindGameObjectsWithTag("Platform");
         foreach (var platform in platforms)
         {
             Rigidbody platformRb = platform.GetComponent<Rigidbody>();
