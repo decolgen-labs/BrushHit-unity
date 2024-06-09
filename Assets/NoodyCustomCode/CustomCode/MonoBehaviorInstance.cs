@@ -33,7 +33,7 @@ namespace NOOD
 
             if(_dontDestroyOnLoad)
             {
-                DontDestroyOnLoad(s_instance.gameObject);
+                DontDestroyOnLoad(this.gameObject);
             }
             ChildAwake();
         }

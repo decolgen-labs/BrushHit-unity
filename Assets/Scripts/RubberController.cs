@@ -77,6 +77,7 @@ public class RubberController : MonoBehaviour
             SetColor(_brushedColor);
             CreateVFX(_brushedColor);
             gameObject.tag = "Untagged";
+            SocketConnectManager.Instance.CheckTrue(this.transform.position);
         }
         else if(collision.gameObject.CompareTag("Enemy") || collision.contacts[0].otherCollider.transform.gameObject.CompareTag("Enemy")) {
             SetColor(_defaultColor);

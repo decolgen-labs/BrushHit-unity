@@ -92,6 +92,11 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 
     }
 
+    public void CheckTrue(Vector3 position)
+    {
+        socket.Emit(SocketEnum.isTrue.ToString(), new object[] { position.x, position.z });
+    }
+
     public bool IsBetweenBrush(int index, Vector3 position, Action onTrue)
     {
         bool result = false;
