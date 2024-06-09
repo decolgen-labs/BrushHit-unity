@@ -20,11 +20,13 @@ public class BrushController : MonoBehaviour
     private CameraController _camera;
 
     private Vector3 _spawnPosition;
-    private Vector3 _offset = new Vector3(0, 0.9f, 2);
+    private Vector3 _offset = new Vector3(0, 0.9f, 0);
+    private Vector3 _oldParentPos;
 
     private int _brushIndex = 0;
     private int _direction;
     private int _numberOfGrowUp;
+    private bool _isPlatform;
 
     public bool _isTransition { get; private set; }
 
@@ -37,21 +39,29 @@ public class BrushController : MonoBehaviour
     }
     public void Reset()
     {
+        Debug.Log("Reset");
         _brushIndex = 0;
         _direction = 1;
         _numberOfGrowUp = 0;
         _mainBrush = _brush[_brushIndex];
         _camera.UpdateTarget(_mainBrush);
         UpdateTag("Untagged");
+        _isPlatform = false;
 
         GameObject spawnPoint = GameObject.FindGameObjectWithTag("Spawn");
         if(spawnPoint != null)
         {
             _spawnPosition = spawnPoint.transform.position;
-            transform.position = _spawnPosition + _offset;
+            // this.transform.position = _spawnPosition + _offset;
             transform.eulerAngles = Vector3.zero;
         }
-        SocketConnectManager.Instance.UpdateBrushPosition(_mainBrush.transform.position, GetRotateBrush().transform.position);
+        SocketConnectManager.Instance.UpdatePlatformOffset(Vector3.zero);
+        if(spawnPoint != null)
+        {
+            SocketConnectManager.Instance.UpdateBrushPosition(_spawnPosition + _offset, GetRotateBrush().transform.position);
+        }
+        else
+            SocketConnectManager.Instance.UpdateBrushPosition(_mainBrush.transform.position, GetRotateBrush().transform.position);
     }
     void Update()
     {
@@ -61,32 +71,48 @@ public class BrushController : MonoBehaviour
             {
                 UpdateMainBrush();
                 SocketConnectManager.Instance.PlayerInput();
-                // if (!_gameManager.IsImmortal)
-                // {
-                //     GameObject thingBelow = CheckBelow();
-                //     if (thingBelow == null || !thingBelow.CompareTag("Platform"))
-                //     {
-                //         _gameManager.LoseGame();
-                //         transform.SetParent(null);
-                //     }
-                //     else
-                //     {
-                //         transform.SetParent(thingBelow.transform.parent);
-                //     }
-                // }
+                if (!_gameManager.IsImmortal)
+                {
+                    GameObject thingBelow = CheckBelow();
+                    if (thingBelow == null || !thingBelow.CompareTag("Platform"))
+                    {
+                        _gameManager.LoseGame();
+                        transform.SetParent(null);
+                        _isPlatform = false;
+                    }
+                    else
+                    {
+                        transform.SetParent(thingBelow.transform.parent);
+                        _oldParentPos = thingBelow.transform.parent.position;
+                        _isPlatform = true;
+                    }
+                }
             }
+        }
+
+        // Update platform position
+        if(_isPlatform)
+        {
+            Vector3 offset = this.transform.parent.position - _oldParentPos;
+            SocketConnectManager.Instance.UpdatePlatformOffset(offset);
+            _oldParentPos = this.transform.parent.position;
+        }
+        else
+        {
+            SocketConnectManager.Instance.UpdatePlatformOffset(Vector3.zero);
         }
         // Update position
         (Vector3 mainBrush, Vector3 otherBrush) = SocketConnectManager.Instance.GetBrushPosition();
         GetRotateBrush().transform.position = otherBrush;
         _mainBrush.transform.position = mainBrush;
         this.transform.position = mainBrush;
+        Debug.Log("main Pos: " + mainBrush + " other Pos: " + otherBrush);
 
         // Update rotation
         Vector3 rotateVector = (otherBrush - mainBrush).normalized;
         this.transform.forward = rotateVector;
     }
-    void FixedUpdate()
+    void LateUpdate()
     {
     }
 
