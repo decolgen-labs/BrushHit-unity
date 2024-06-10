@@ -68,7 +68,7 @@ public class SpawnManager : MonoBehaviour
             GameObject powerUp = null;
             if (type == 0)
             {
-                powerUp = Instantiate(_growUpPrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
+                // powerUp = Instantiate(_growUpPrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
             } else if(type == 1) {
                 powerUp = Instantiate(_freezePrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
             } else {
