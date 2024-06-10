@@ -26,10 +26,15 @@ var _currentTime = 0;
 var _rotateSpeed = 0.2;
 var _radius = 4;
 var _platformOffset = {'x': 0, 'y' : 0};
+var _currentPoint;
+var _previousPoint;
+var _totalScore;
 
 io.on('connection', socket => {
   console.log('connection');
 
+  _previousPoint = 0;
+  _currentPoint = 0;
   _currentTime = new Date().getTime();
   setTimeout(() => {
     socket.emit('connection', { date: new Date().getTime(), data: "Hello Unity" })
@@ -71,7 +76,6 @@ io.on('connection', socket => {
 
   socket.on('updatePlatformPosition', (positionX, positionY) => {
     _platformOffset = {x: positionX, y: positionY };
-    console.log(_platformOffset);
   });
 })
 
@@ -98,12 +102,19 @@ function addToRubberList()
 function playerTouch()
 {
   change_direction();
+  if (_currentPoint != _previousPoint)
+  {
+    _totalScore = (_currentPoint - _previousPoint) * 2;
+  }
 }
 
 function check_true(position)
 {
   let distance = distance_between_two_point(position.x, position.y, _mainBrush.x, _mainBrush.y);
   return distance < _radius + 1;
+}
+function calculate_point()
+{
 }
 
 function checkWin()
