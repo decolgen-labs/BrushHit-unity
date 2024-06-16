@@ -115,18 +115,4 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         _isSpawnCoin = false;
         return result;
     }
-
-    // public bool IsBetweenBrush(int index, Vector3 position, Action onTrue)
-    // {
-    //     bool result = false;
-    //     socket.Emit(SocketEnum.isCollided.ToString(), new object[] { index, position.x, position.z });
-    //     socket.OnUnityThread(SocketEnum.isCollided.ToString(), (data) =>
-    //     {
-    //         result = data.GetValue<SocketBooleanObject>(0).data;
-    //         if(result)
-    //             onTrue?.Invoke();
-    //     });
-    //     UnityEngine.Debug.Log("Final result: " + result);
-    //     return result;
-    // }
 }

@@ -181,7 +181,6 @@ public class GameManager : MonoBehaviour
         }
         StopGame();
         _uiManager.EndLevel(true);
-        SocketConnectManager.Instance.UpdateLevel(Level);
         SaveData();
     }
 

@@ -46,6 +46,13 @@ public class RubberController : MonoBehaviour
             // });
         }
     }
+    void OnDestroy()
+    {
+        if(_coinController)
+        {
+            Destroy(_coinController.gameObject);
+        }
+    }
 
     public void SetCoin(bool isCoin)
     {

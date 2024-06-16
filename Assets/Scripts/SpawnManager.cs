@@ -16,11 +16,16 @@ public class SpawnManager : MonoBehaviour
 
     public void SpawnRubbers()
     {
+        foreach(var rubber in _rubbers)
+        {
+            Destroy(rubber.gameObject);
+        }
         _rubbers = new List<GameObject>();
         GameObject rubbers = new GameObject();
         rubbers.transform.SetParent(_gameManager._levelData.transform);
         rubbers.name = "Rubbers";
         rubbers.transform.position = Vector3.zero;
+        SocketConnectManager.Instance.UpdateLevel(_gameManager.Level);
 
         //Find all platform in level
         GameObject[] platforms = GameObject.FindGameObjectsWithTag("Platform");
