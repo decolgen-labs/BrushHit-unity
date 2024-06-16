@@ -11,11 +11,21 @@ public class InfoPanelUI : MonoBehaviour
     [SerializeField] private Image _playerIcon;
     [SerializeField] private Button _claimBtn, _logOutBtn;
 
+    #region Unity functions
     void Awake()
     {
         _claimBtn.onClick.AddListener(Claim);       
         _logOutBtn.onClick.AddListener(LogOut);
     }
+    void Start()
+    {
+        // SocketConnectManager.Instance.onUpdateCoin += RefreshPoint;
+    }
+    void OnDestroy()
+    {
+        // SocketConnectManager.Instance.onUpdateCoin -= RefreshPoint;
+    }
+    #endregion
 
     public void RefreshUI()
     {
@@ -28,6 +38,7 @@ public class InfoPanelUI : MonoBehaviour
 
     public void RefreshPoint(int point)
     {
+        Debug.Log("RefreshPoint: " + point);
         _point.text = point.ToString();
     }
 

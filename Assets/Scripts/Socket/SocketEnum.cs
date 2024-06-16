@@ -3,10 +3,12 @@ public enum SocketEnum
     update,
     updateBrushPosition,
     updatePlatformPosition,
-    addRubber,
+    updateCoin,
     isCollided,
     updateBrushRadius,
+    updateLevel,
     playerTouch,
+    coinCollect,
     isTrue,
-    
+    spawnCoin
 }

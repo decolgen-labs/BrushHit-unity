@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class RubberController : MonoBehaviour
@@ -13,12 +14,16 @@ public class RubberController : MonoBehaviour
     //The Joint of rubber to platform
     [SerializeField] HingeJoint _hingeJoint;
 
+    [SerializeField] GameObject _coinPrefab;
+
     public int index;
     private GameManager _gameManager;
     private Color _defaultColor;
     private Color _brushedColor;
     private Vector3 _worldPosition;
     public bool check;
+    private bool _isCoin;
+    private CoinController _coinController;
 
     private void Awake()
     {
@@ -32,13 +37,23 @@ public class RubberController : MonoBehaviour
         if(check)
         {
             // Debug.Log("Rubber: " + _worldPosition);
-            SocketConnectManager.Instance.IsBetweenBrush(index, _worldPosition, () => {
-                _gameManager.IncreaseScore();
+            // SocketConnectManager.Instance.IsBetweenBrush(index, _worldPosition, () => {
+            //     _gameManager.IncreaseScore();
 
-                SetColor(_brushedColor);
-                CreateVFX(_brushedColor);
-                gameObject.tag = "Untagged";
-            });
+            //     SetColor(_brushedColor);
+            //     CreateVFX(_brushedColor);
+            //     gameObject.tag = "Untagged";
+            // });
+        }
+    }
+
+    public void SetCoin(bool isCoin)
+    {
+        _isCoin = isCoin;
+        if(isCoin)
+        {
+            Debug.Log("Is Coin");
+            _coinController = Instantiate(_coinPrefab, this.transform.position + new Vector3(0, 1f, 0), Quaternion.identity).GetComponent<CoinController>();
         }
     }
 
@@ -72,16 +87,14 @@ public class RubberController : MonoBehaviour
         Color color = gameObject.GetComponent<Renderer>().material.color;
         if ((collision.gameObject.CompareTag("Brush") || collision.contacts[0].otherCollider.transform.gameObject.CompareTag("Brush")) && color != _brushedColor)
         {
-            _gameManager.IncreaseScore();
-
             SetColor(_brushedColor);
             CreateVFX(_brushedColor);
             gameObject.tag = "Untagged";
-            SocketConnectManager.Instance.CheckTrue(this.transform.position);
-        }
-        else if(collision.gameObject.CompareTag("Enemy") || collision.contacts[0].otherCollider.transform.gameObject.CompareTag("Enemy")) {
-            SetColor(_defaultColor);
-            gameObject.tag = "Rubber";
+            if(_coinController != null)
+            {
+                _coinController.OnCoinCollect();
+            }
+            _gameManager.IncreaseScore();
         }
     }
 

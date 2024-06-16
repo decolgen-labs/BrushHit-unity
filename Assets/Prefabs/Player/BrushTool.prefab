@@ -4884,7 +4884,7 @@ MonoBehaviour:
   - {fileID: 9181850034319802798}
   - {fileID: 8095356985339655032}
   _brushMaterial: {fileID: 2100000, guid: f72c4047f3c49ca4ab894dfb1e9b0608, type: 2}
-  _immortalMaterial: {fileID: 0}
+  _immortalMaterial: {fileID: 2100000, guid: cffc18ae1b301334381b77b331a9cc19, type: 2}
   _brushVFX: {fileID: 2737188678095123000}
   _brushSFX: {fileID: 8300000, guid: 537b698c0bf05e74c9c86118b2f78679, type: 3}
   _audioSource: {fileID: 0}

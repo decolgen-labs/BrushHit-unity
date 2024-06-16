@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using NOOD.Extension;
 using UnityEngine;
 
 //This script used to spawn all rubbers on platform and power-up prefab
@@ -15,13 +16,13 @@ public class SpawnManager : MonoBehaviour
 
     public void SpawnRubbers()
     {
+        _rubbers = new List<GameObject>();
         GameObject rubbers = new GameObject();
         rubbers.transform.SetParent(_gameManager._levelData.transform);
         rubbers.name = "Rubbers";
         rubbers.transform.position = Vector3.zero;
 
         //Find all platform in level
-        
         GameObject[] platforms = GameObject.FindGameObjectsWithTag("Platform");
         foreach (var platform in platforms)
         {
@@ -51,9 +52,16 @@ public class SpawnManager : MonoBehaviour
                     rubberController.SetColor(_gameManager.DefaultColor);
                     rubberController.UpdateColor(_gameManager.DefaultColor, _gameManager.BrushedColor);
                     rubber.transform.parent = rubbers.transform;
-                    rubber.GetComponent<RubberController>().index = _rubbers.Count -1;
+                    rubberController.index = _rubbers.Count -1;
+                    rubberController.SetCoin(false);
                 }
             }
+        }
+
+        if(SocketConnectManager.Instance.IsSpawnCoinThisLevel())
+        {
+            GameObject rubber = _rubbers.GetRandom();
+            rubber.GetComponent<RubberController>().SetCoin(true);
         }
     }
 
@@ -68,7 +76,7 @@ public class SpawnManager : MonoBehaviour
             GameObject powerUp = null;
             if (type == 0)
             {
-                // powerUp = Instantiate(_growUpPrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
+                powerUp = Instantiate(_growUpPrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
             } else if(type == 1) {
                 powerUp = Instantiate(_freezePrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
             } else {

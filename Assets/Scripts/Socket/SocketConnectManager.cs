@@ -10,10 +10,14 @@ using Debug = System.Diagnostics.Debug;
 
 public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 {
+    public Action<int> onUpdateCoin;
+
     public SocketIOUnity socket;
     public (Vector2 mainBrush, Vector2 otherBrush) _brushTuple;
     public float _brushHeigh;
+    public bool _isSpawnCoin;
 
+    #region Unity function
     protected override void ChildAwake()
     {
         //TODO: check the Uri if Valid.
@@ -60,17 +64,22 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         {
             _brushTuple = data.GetValue<SocketBrushPositionData>().GetTuple();
         });
-
-        socket.OnAnyInUnityThread((name, response) =>
+        socket.On(SocketEnum.spawnCoin.ToString(), (data) =>
         {
-            // UnityEngine.Debug.Log(name + " " + response.ToString());
+            _isSpawnCoin = true;
+        });
+        socket.On(SocketEnum.updateCoin.ToString(), (coin) =>
+        {
+            onUpdateCoin?.Invoke(coin.GetValue<int>());
         });
     }
     void Update()
     {
         socket.Emit(SocketEnum.update.ToString());    
     }
+    #endregion
 
+    #region Update socket
     public void UpdateBrushPosition(Vector3 mainBrush, Vector3 otherBrush)
     {
         _brushHeigh = mainBrush.y;
@@ -80,6 +89,12 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     {
         socket.Emit(SocketEnum.updatePlatformPosition.ToString(), new object[] { position.x, position.z });
     }
+    public void UpdateLevel(int level)
+    {
+        socket.Emit(SocketEnum.updateLevel.ToString(), level);
+    }
+    #endregion
+
     public (Vector3 mainBrush, Vector3 otherBrush) GetBrushPosition()
     {
         Vector3 mainBrush = new Vector3(_brushTuple.mainBrush.x, _brushHeigh, _brushTuple.mainBrush.y);
@@ -90,28 +105,28 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     {
         socket.Emit(SocketEnum.playerTouch.ToString());
     }
-
-    public void CheckWin()
+    public void CoinCollect()
     {
-
+        socket.Emit(SocketEnum.coinCollect.ToString());
     }
-
-    public void CheckTrue(Vector3 position)
+    public bool IsSpawnCoinThisLevel()
     {
-        socket.Emit(SocketEnum.isTrue.ToString(), new object[] { position.x, position.z });
-    }
-
-    public bool IsBetweenBrush(int index, Vector3 position, Action onTrue)
-    {
-        bool result = false;
-        socket.Emit(SocketEnum.isCollided.ToString(), new object[] { index, position.x, position.z });
-        socket.OnUnityThread(SocketEnum.isCollided.ToString(), (data) =>
-        {
-            result = data.GetValue<SocketBooleanObject>(0).data;
-            if(result)
-                onTrue?.Invoke();
-        });
-        UnityEngine.Debug.Log("Final result: " + result);
+        bool result = _isSpawnCoin;
+        _isSpawnCoin = false;
         return result;
     }
+
+    // public bool IsBetweenBrush(int index, Vector3 position, Action onTrue)
+    // {
+    //     bool result = false;
+    //     socket.Emit(SocketEnum.isCollided.ToString(), new object[] { index, position.x, position.z });
+    //     socket.OnUnityThread(SocketEnum.isCollided.ToString(), (data) =>
+    //     {
+    //         result = data.GetValue<SocketBooleanObject>(0).data;
+    //         if(result)
+    //             onTrue?.Invoke();
+    //     });
+    //     UnityEngine.Debug.Log("Final result: " + result);
+    //     return result;
+    // }
 }

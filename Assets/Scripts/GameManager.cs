@@ -4,6 +4,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System;
+using NOOD;
 
 //This script handle the game
 public class GameManager : MonoBehaviour
@@ -25,9 +27,6 @@ public class GameManager : MonoBehaviour
     //Score to inc each rubber
     public int ScoreToIncrease;
 
-    //Extra Score to inc each rubber when player play on AI mode
-    public int ExtraScoreAIMode;
-
     //Number of grow up point enough to get grow up power-up
     public int NumberOfGrowUps;
 
@@ -38,9 +37,8 @@ public class GameManager : MonoBehaviour
     public GameObject _levelData { get; private set; }
     public int Level { get; private set; }
     public int Stage { get; private set; }
-    public int LevelScore { get; private set; }
+    public int CoinCollected { get; private set; }
 
-    public bool AiMode { get; private set; } = false;
     public bool IsFreezing { get; private set; }
     public bool IsImmortal { get; private set; }
 
@@ -52,6 +50,7 @@ public class GameManager : MonoBehaviour
     private int _previousPoint;
     private int _totalRubberInLevel;
 
+    #region Unity functions
     // Start is called before the first frame update
     void Start()
     {
@@ -59,26 +58,18 @@ public class GameManager : MonoBehaviour
         //this line to reduce the physics calculation
         Physics.reuseCollisionCallbacks = true;
         Init();
+        SocketConnectManager.Instance.onUpdateCoin += UpdateCoin;
     }
+    void OnDestroy()
+    {
+        SocketConnectManager.Instance.onUpdateCoin -= UpdateCoin;
+    }
+    #endregion
 
     void Init()
     {
         //Get Player Save Data
-        Level = PlayerPrefs.GetInt("level");
-        Stage = PlayerPrefs.GetInt("stage");
-        LevelScore = PlayerPrefs.GetInt("levelScore");
-        int aiMode = PlayerPrefs.GetInt("aiMode");
-        if (aiMode == 0)
-        {
-            AiMode = false;
-        }
-        else
-        {
-            AiMode = true;
-        }
-
         LoadLevel();
-        PlayerDataManager.Instance.SetPlayerPoint(LevelScore);
     }
 
     // Update is called once per frame
@@ -136,6 +127,12 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void UpdateCoin(int coin)
+    {
+        Debug.Log("GameMangerUpdatePoint: " + coin);
+        CoinCollected = coin;
+    }
+
     //this function to check when player click on UI so do not control the brush
     public bool CheckClickUI()
     {
@@ -165,17 +162,7 @@ public class GameManager : MonoBehaviour
             if(rubber.GetComponent<Renderer>().material.color == DefaultColor)
             {
                 numberOfUncoloredRubber++;
-                if (!AiMode)
-                {
-                    return;
-                } else {
-                    if (numberOfUncoloredRubber > _totalRubberInLevel * 0.3)
-                    {
-                        return;
-                    } else {
-                        continue;
-                    }
-                }
+                return;
             }
         }
         WinGame();
@@ -187,7 +174,6 @@ public class GameManager : MonoBehaviour
         {
             Level = (Level + 1) % _levelScriptableObject.LevelDatas.Length;
             Stage = 0;
-            LevelScore = 0;
         }
         else
         {
@@ -195,20 +181,18 @@ public class GameManager : MonoBehaviour
         }
         StopGame();
         _uiManager.EndLevel(true);
-
+        SocketConnectManager.Instance.UpdateLevel(Level);
         SaveData();
     }
 
     public void LoseGame()
     {
-        LevelScore = PlayerPrefs.GetInt("levelScore");
         StopGame();
         _uiManager.EndLevel(false);
     }
 
     public void RetryGame()
     {
-        LevelScore = PlayerPrefs.GetInt("levelScore");
         StopGame();
         _uiManager.RetryLevel();
     }
@@ -236,18 +220,7 @@ public class GameManager : MonoBehaviour
         _uiManager.StartLevel(Level, _levelScriptableObject.LevelDatas[Level].StagesData.Length, Stage);
         _uiManager.UpdateScore();
 
-        ResetAIEnemy();
-
         StartCoroutine(SpawnRubbers());
-    }
-
-    private void ResetAIEnemy()
-    {
-        GameObject[] enemies = GameObject.FindGameObjectsWithTag("Enemy");
-        foreach (GameObject enemy in enemies)
-        {
-            enemy.SetActive(AiMode);
-        }
     }
 
     IEnumerator SpawnRubbers()
@@ -271,15 +244,8 @@ public class GameManager : MonoBehaviour
             GetGrowUps();
             GetFreeze();
             GetImmortal();
-            LevelScore += ScoreToIncrease;
-            if (AiMode)
-            {
-                LevelScore += ExtraScoreAIMode;
-            }
-            _currentPoint++;
 
             _uiManager.UpdateScore();
-
             _audioSource.PlayOneShot(_scoreSFX, 0.1f);
         }
     }
@@ -288,7 +254,7 @@ public class GameManager : MonoBehaviour
     {
         if (!_isGetGrowUp)
         {
-            int result = Random.Range(0, PowerUpRatio);
+            int result = UnityEngine.Random.Range(0, PowerUpRatio);
             if (result == 0)
             {
                 _isGetGrowUp = true;
@@ -301,7 +267,7 @@ public class GameManager : MonoBehaviour
     {
         if (!_isGetFreeze)
         {
-            int result = Random.Range(0, PowerUpRatio);
+            int result = UnityEngine.Random.Range(0, PowerUpRatio);
             if (result == 1)
             {
                 _isGetFreeze = true;
@@ -314,7 +280,7 @@ public class GameManager : MonoBehaviour
     {
         if (!_isGetImmortal)
         {
-            int result = Random.Range(0, PowerUpRatio);
+            int result = UnityEngine.Random.Range(0, PowerUpRatio);
             if (result == 2)
             {
                 _isGetImmortal = true;
@@ -330,15 +296,11 @@ public class GameManager : MonoBehaviour
         {
             return;
         }
-        LevelScore += extraScore * 2;
-        PlayerDataManager.Instance.SetPlayerPoint(LevelScore);
-        _uiManager.UpdateScore();
         _uiManager.DisplayNotification(0, extraScore);
     }
 
     public void ChangeGameMode()
     {
-        AiMode = !AiMode;
         RetryGame();
     }
 
@@ -371,17 +333,6 @@ public class GameManager : MonoBehaviour
     //Save data to PlayerPrefs (local)
     private void SaveData()
     {
-        PlayerPrefs.SetInt("level", Level);
-        PlayerPrefs.SetInt("stage", Stage);
-        PlayerPrefs.SetInt("levelScore", LevelScore);
-        int aiMode = 0;
-        if(AiMode)
-        {
-            aiMode = 1;
-        } else {
-            aiMode = 0;
-        }
-        PlayerPrefs.SetInt("aiMode", aiMode);
         PlayerPrefs.Save();
     }
 }
