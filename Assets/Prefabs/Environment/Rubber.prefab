@@ -29,13 +29,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7395072483574459402}
+  serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.45, y: 2.5, z: -0.45}
   m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &7035690473382878179
 MeshFilter:
@@ -149,7 +149,7 @@ HingeJoint:
   m_Anchor: {x: 0, y: -1, z: 0}
   m_Axis: {x: 0, y: -100, z: 0}
   m_AutoConfigureConnectedAnchor: 1
-  m_ConnectedAnchor: {x: 0, y: 0, z: 0}
+  m_ConnectedAnchor: {x: -0.45, y: 2, z: -0.45}
   serializedVersion: 2
   m_UseSpring: 0
   m_Spring:
@@ -191,3 +191,6 @@ MonoBehaviour:
   _rubberRigidbody: {fileID: 3938004035137767342}
   _rubberVFXPrefabs: {fileID: 188399307153348577, guid: 2ddc69e2b10511d428410b516582bac4, type: 3}
   _hingeJoint: {fileID: 4601796540210338855}
+  _coinPrefab: {fileID: 7223906277408349827, guid: 9d34f9ce8d9994e1ab82b76e901bb98d, type: 3}
+  index: 0
+  check: 0

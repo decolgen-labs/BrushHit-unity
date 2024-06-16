@@ -28,7 +28,9 @@ var _radius = 4;
 var _platformOffset = {'x': 0, 'y' : 0};
 var _currentPoint;
 var _previousPoint;
-var _totalScore;
+var _level = 0; // mỗi level có 5 stage nên mỗi lần thay đổi level là người chơi đã chơi 5 màn
+var _isCoinCollected;
+var _collectedCoin = 0;
 
 io.on('connection', socket => {
   console.log('connection');
@@ -56,10 +58,6 @@ io.on('connection', socket => {
     _otherBrush = { x: x2, y: y2 };
   });
 
-  socket.on('addRubber', (data) => {
-    addToRubberList();
-  });
-
   socket.on('playerTouch', (data) => {
     playerTouch();
   });
@@ -71,16 +69,41 @@ io.on('connection', socket => {
   });
 
   socket.on('isTrue', (positionX, positionY) => {
-    console.log(check_true({ x: positionX, y: positionY }));
+    if (check_true({ x: positionX, y: positionY }))
+    {
+      get_coin();
+    }
   });
 
   socket.on('updatePlatformPosition', (positionX, positionY) => {
     _platformOffset = {x: positionX, y: positionY };
   });
+
+  socket.on('updateLevel', (level) => {
+    if(level != _level)
+    {
+      _level = level;
+      _isCoinCollected = false;
+      socket.emit('spawnCoin');  
+    }
+  });
+
+  socket.on('coinCollect', () => {
+    _isCoinCollected = true;
+    _collectedCoin++;
+    socket.emit('updateCoin', _collectedCoin);
+  });
 })
 
-var rubberNumber = 0;
-var rubberDic = {};
+
+function get_coin()
+{
+  if (_isCoinCollected == false)
+  {
+    // get coin in this code block
+    _isCoinCollected = true;
+  }
+}
 
 function updateCalculate()
 {
@@ -92,11 +115,6 @@ function rotateBrush()
 {
   let angle = _deltaTime * _rotateSpeed;
   _otherBrush = rotatePointWithRadius(_otherBrush.x, _otherBrush.y, _mainBrush.x, _mainBrush.y, angle, _radius)
-}
-
-function addToRubberList()
-{
-  rubberNumber++;
 }
 
 function playerTouch()
@@ -112,14 +130,6 @@ function check_true(position)
 {
   let distance = distance_between_two_point(position.x, position.y, _mainBrush.x, _mainBrush.y);
   return distance < _radius + 1;
-}
-function calculate_point()
-{
-}
-
-function checkWin()
-{
-  return rubberDic.length == rubberNumber;
 }
 
 server.listen(port, () => {

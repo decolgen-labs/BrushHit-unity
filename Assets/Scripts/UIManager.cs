@@ -2,11 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
-using Org.BouncyCastle.Asn1.Crmf;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Audio;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -30,9 +27,6 @@ public class UIManager : MonoBehaviour
     //Transition canvas
     [SerializeField] Canvas _transitionCanvas;
 
-    //AI UI Toggle
-    [SerializeField] ToggleHandler _aIButton;
-
     // Player Info UI
     [SerializeField] InfoPanelUI _infoPanelUI;
     [SerializeField] Button _infoButton;
@@ -46,8 +40,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] Button _connectWalletButtonBraavos;
     [SerializeField] GameObject _connectWalletPanel;
 
-    private TextMeshProUGUI _startText;
     private TextMeshProUGUI _scoreText;
+    private TextMeshProUGUI _startText;
     private TextMeshProUGUI _notificationText;
 
     //Component to handle animation of notifications
@@ -131,8 +125,9 @@ public class UIManager : MonoBehaviour
     {
         if(_scoreText != null)
         {
-            _scoreText.text = _gameManager.LevelScore.ToString();
-            _infoPanelUI.RefreshPoint(_gameManager.LevelScore);
+            Debug.Log("UI Update score: " + _gameManager.CoinCollected);
+            _scoreText.text = _gameManager.CoinCollected.ToString();
+            _infoPanelUI.RefreshPoint(_gameManager.CoinCollected);
         }
     }
 
@@ -225,12 +220,6 @@ public class UIManager : MonoBehaviour
         _notificationTextAnimator = _notificationText.GetComponent<Animator>();
         _effectImage = GameObject.Find("EffectImage").GetComponent<Image>();
         _infoPanelUI.RefreshUI();
-
-        //Pre-toggle AI button if the save data shows that the player is playing AI mode
-        if (_gameManager.AiMode)
-        {
-            _aIButton.OnToggle();
-        }
 
         for (int i = 1; i <= 3; i++)
         {

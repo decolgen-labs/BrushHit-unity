@@ -106,7 +106,6 @@ public class BrushController : MonoBehaviour
         GetRotateBrush().transform.position = otherBrush;
         _mainBrush.transform.position = mainBrush;
         this.transform.position = mainBrush;
-        Debug.Log("main Pos: " + mainBrush + " other Pos: " + otherBrush);
 
         // Update rotation
         Vector3 rotateVector = (otherBrush - mainBrush).normalized;
