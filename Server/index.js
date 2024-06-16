@@ -35,6 +35,7 @@ var _collectedCoin = 0;
 io.on('connection', socket => {
   console.log('connection');
 
+  _isCoinCollected = false;
   _previousPoint = 0;
   _currentPoint = 0;
   _currentTime = new Date().getTime();
@@ -84,6 +85,9 @@ io.on('connection', socket => {
     {
       _level = level;
       _isCoinCollected = false;
+    }
+    if (_isCoinCollected == false)
+    {
       socket.emit('spawnCoin');  
     }
   });
