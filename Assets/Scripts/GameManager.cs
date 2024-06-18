@@ -59,6 +59,7 @@ public class GameManager : MonoBehaviour
         Physics.reuseCollisionCallbacks = true;
         Init();
         SocketConnectManager.Instance.onUpdateCoin += UpdateCoin;
+        WalletConnectManager.Instance.SyncPlayerPoint();
     }
     void OnDestroy()
     {
@@ -106,7 +107,7 @@ public class GameManager : MonoBehaviour
                 IsPlaying = true; 
                 _uiManager.HideStartText();
                 _brushTool.UpdateTag("Brush");
-#else
+#elif UNITY_WEBGL
                 WalletConnectManager.Instance.ConnectWallet(() => 
                 { 
                     IsPlaying = true; 

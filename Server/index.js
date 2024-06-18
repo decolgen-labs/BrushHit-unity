@@ -35,7 +35,7 @@ var _collectedCoin = 0;
 io.on('connection', socket => {
   console.log('connection');
 
-  _isCoinCollected = false;
+  _isCoinCollected = true;
   _previousPoint = 0;
   _currentPoint = 0;
   _currentTime = new Date().getTime();
