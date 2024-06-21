@@ -6,6 +6,7 @@ using NOOD;
 using SocketIOClient;
 using SocketIOClient.Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 using Debug = System.Diagnostics.Debug;
@@ -21,6 +22,7 @@ public class ProofClass
 public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 {
     public Action<int> onUpdateCoin;
+    public Action<ProofClass> onClaim;
 
     public SocketIOUnity socket;
     public (Vector2 mainBrush, Vector2 otherBrush) _brushTuple;
@@ -87,7 +89,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         {
             proofStruct = JsonConvert.DeserializeObject<ProofClass[]>(proof.ToString())[0];
             UnityEngine.Debug.Log(proofStruct.proof[1]);
-            WalletConnectManager.Instance.Claim();
+            onClaim?.Invoke(proofStruct);
         });
     }
     void Update()
@@ -95,7 +97,9 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         socket.Emit(SocketEnum.update.ToString());    
         if(Input.GetKeyDown(KeyCode.T))
         {
+            UnityEngine.Debug.Log("TryClaim");
             Claim();
+            // WalletConnectManager.Instance.SyncPlayerPoint();
         }
     }
     #endregion

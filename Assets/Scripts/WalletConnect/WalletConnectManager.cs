@@ -9,6 +9,8 @@ using System.Globalization;
 using StarkSharp.Settings;
 using StarkSharp.Connectors.Components;
 using StarkSharp.Platforms.Unity.RPC;
+using Newtonsoft.Json;
+using System.Linq;
 
 public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
 {
@@ -24,6 +26,16 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
     {
         base.ChildAwake();
         _isShowConnectWalletUI = false;
+    }
+
+    void Start()
+    {
+        SocketConnectManager.Instance.onClaim += Claim;
+    }
+
+    void OnDisable()
+    {
+        SocketConnectManager.Instance.onClaim -= Claim;
     }
 
     public void ConnectWallet(Action onSuccess)
@@ -99,8 +111,15 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         calldata[0] = userAddress;
         string calldataString = JsonUtility.ToJson(new ArrayWrapper { array = calldata });
         Debug.Log("data string: " + calldataString);
+#if UNITY_EDITOR
+        UnityRpcPlatform rpcPlatform = new UnityRpcPlatform();
+        ContractInteraction contractInteraction = new ContractInteraction(contractAddress, "getUserPoint", userAddress);
+        rpcPlatform.CallContract(contractInteraction, OnSuccess, OnError);
+#elif UNITY_WEBGL
         JSInteropManager.CallContract(contractAddress, "getUserPoint", calldataString, gameObject.name, "Erc721Callback");
+#endif
     }
+
     public void Erc721Callback(string response)
     {
         JsonResponse jsonResponse = JsonUtility.FromJson<JsonResponse>(response);
@@ -109,16 +128,27 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         PlayerDataManager.Instance.SetPlayerPoint((int)balance);
         _gameManager.UpdateCoin((int)balance);
     }
-    public void Claim()
+    public void Claim(ProofClass proofClass)
     {
-        Debug.Log("Claim");
-        string[] calldata = new string[3];
-        // calldata[0] = proofStruct.point.ToString();
-        // calldata[1] = proofStruct.timestamp.ToString();
-        // calldata[2] = proofStruct.proof.ToString();
-        Debug.Log("callData: " + calldata);
-        string callDataString = JsonUtility.ToJson(new ArrayWrapper { array = calldata });
-        Debug.Log(callDataString);
-        // JSInteropManager.CallContract(contractAddress, "rewardPoint", )
+        Settings.apiurl = "https://starknet-mainnet.public.blastapi.io/rpc/v0_7";
+        // string[] calldata = new string[3];
+        // calldata[0] = proofClass.point.ToString();
+        // calldata[1] = proofClass.timestamp.ToString();
+        // calldata[2] = JsonUtility.ToJson(proofClass);
+
+        string callDataString = JsonUtility.ToJson(proofClass);
+        Debug.Log("callDataString: " + callDataString);
+#if UNITY_EDITOR
+        UnityRpcPlatform rpcPlatform = new UnityRpcPlatform();
+        ContractInteraction contractInteraction = new ContractInteraction(contractAddress, "rewardPoint", callDataString);
+        rpcPlatform.CallContract(contractInteraction, OnSuccess, OnError);
+#elif UNITY_WEBGL
+        // JSInteropManager.CallContract(contractAddress, "rewardPoint", callDataString, gameObject.name, "ClaimCallback");
+#endif
+    }
+
+    public void ClaimCallback(string response)
+    {
+        Debug.Log("Response: " + response);
     }
 }
