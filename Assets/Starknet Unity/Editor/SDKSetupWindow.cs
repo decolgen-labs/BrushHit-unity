@@ -39,13 +39,13 @@ public class SDKSetupWindow : EditorWindow
 
         if (GUILayout.Button("Submit"))
         {
-            SetupSDK();
+            SetupSDK(rpcNode);
             // Hide the window
             this.Close();
         }
     }
 
-    void SetupSDK()
+    void SetupSDK(string rpc)
     {
         SaveSettingsToFile();
 

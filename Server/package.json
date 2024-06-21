@@ -10,6 +10,7 @@
   "dependencies": {
     "cjs": "^0.0.11",
     "http": "^0.0.1-security",
-    "socket.io": "^4.2.0"
+    "socket.io": "^4.2.0",
+    "starknet": "^6.10.0"
   }
 }

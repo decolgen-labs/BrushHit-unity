@@ -4,8 +4,26 @@ const {add_two_vectors, subtract_two_vectors} = require('./Vector');
 const {change_direction, rotatePointWithRadius, distance_between_two_point} = require('./brush');
 const http = require('http');
 const socket = require('socket.io');
+const {
+  Account,
+  stark,
+  shortString,
+  typedData,
+  RpcProvider,
+} = require('starknet');
 const server = http.createServer();
 const port = 11100;
+const RPC = 'https://starknet-sepolia.public.blastapi.io/rpc/v0_7';
+const provider = new RpcProvider({ nodeUrl: RPC });
+const PRIVATE_KEY =
+  '0x066b7a9451c9c95a14343d4b98b5ece5f8fd4aa671a73494bf6f38ee0a9598f2';
+const ACCOUNT_ADDRESS =
+  '0x06b491bC165C28627da0d095bE5bC876cb80d3b1dB9a9AC82DE562E791070791';
+
+const ETH_ADDRESS =
+  '0x049d36570d4e46f48e99674bd3fcc84644ddd6b96f7c741b1562b82f9e004dc7';
+
+const account = new Account(provider, ACCOUNT_ADDRESS, PRIVATE_KEY);
 
 var io = socket(server, {
     pingInterval: 10000,
@@ -31,11 +49,12 @@ var _previousPoint;
 var _level = 0; // mỗi level có 5 stage nên mỗi lần thay đổi level là người chơi đã chơi 5 màn
 var _isCoinCollected;
 var _collectedCoin = 0;
+var _playerAddress;
 
 io.on('connection', socket => {
   console.log('connection');
 
-  _isCoinCollected = false;
+  _isCoinCollected = true;
   _previousPoint = 0;
   _currentPoint = 0;
   _currentTime = new Date().getTime();
@@ -97,8 +116,66 @@ io.on('connection', socket => {
     _collectedCoin++;
     socket.emit('updateCoin', _collectedCoin);
   });
+
+  socket.on('claim', async (address) => {
+    _playerAddress = address;
+    var proof = await sign_transaction();
+    socket.emit('updateProof', proof);
+  });
 })
 
+async function sign_transaction()
+{
+  var time = Math.round(new Date().getTime() / 1e3);
+  const typedDataValidate = {
+    types: {
+      StarkNetDomain: [
+        {
+          name: 'name',
+          type: 'string',
+        },
+        {
+          name: 'version',
+          type: 'felt',
+        },
+        {
+          name: 'chainId',
+          type: 'felt',
+        },
+      ],
+      SetterPoint: [
+        {
+          name: 'address',
+          type: 'ContractAddress',
+        },
+        {
+          name: 'point',
+          type: 'u128',
+        },
+        {
+          name: 'timestamp',
+          type: 'u64',
+        },
+      ],
+    },
+    primaryType: 'SetterPoint',
+    domain: {
+      name: 'stark-arcade',
+      version: '1',
+      chainId: '',
+    },
+    message: {
+      address: _playerAddress,
+      point: _collectedCoin,
+      timestamp: time,
+    },
+  };
+
+  const signature2 = await account.signMessage(typedDataValidate);
+  const proof = stark.formatSignature(signature2);
+  console.log(proof);
+  return {address: _playerAddress, point: _collectedCoin, timestamp: time, proof: proof}
+}
 
 function get_coin()
 {

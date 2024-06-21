@@ -58,11 +58,11 @@ public class GameManager : MonoBehaviour
         //this line to reduce the physics calculation
         Physics.reuseCollisionCallbacks = true;
         Init();
-        SocketConnectManager.Instance.onUpdateCoin += UpdateCoin;
+        // SocketConnectManager.Instance.onUpdateCoin += UpdateCoin;
     }
     void OnDestroy()
     {
-        SocketConnectManager.Instance.onUpdateCoin -= UpdateCoin;
+        // SocketConnectManager.Instance.onUpdateCoin -= UpdateCoin;
     }
     #endregion
 
@@ -106,7 +106,7 @@ public class GameManager : MonoBehaviour
                 IsPlaying = true; 
                 _uiManager.HideStartText();
                 _brushTool.UpdateTag("Brush");
-#else
+#elif UNITY_WEBGL
                 WalletConnectManager.Instance.ConnectWallet(() => 
                 { 
                     IsPlaying = true; 
@@ -127,10 +127,9 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void UpdateCoin(int coin)
+    public void UpdateCoin(int coin)
     {
-        Debug.Log("GameMangerUpdatePoint: " + coin);
-        CoinCollected = coin;
+        WalletConnectManager.Instance.SyncPlayerPoint();
     }
 
     //this function to check when player click on UI so do not control the brush

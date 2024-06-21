@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class PlayerDataManager : MonoBehaviorInstance<PlayerDataManager>
 {
-    private float _playerPoint;
+    private int _playerPoint;
 
     public bool IsConnected()
     {
@@ -21,7 +21,7 @@ public class PlayerDataManager : MonoBehaviorInstance<PlayerDataManager>
     {
         PlayerPrefs.SetString("PlayerAddress", playerAddress);
     }
-    public void SetPlayerPoint(float point)
+    public void SetPlayerPoint(int point)
     {
         _playerPoint = point;
     }
@@ -42,4 +42,9 @@ public class PlayerDataManager : MonoBehaviorInstance<PlayerDataManager>
     }
     #endregion
 
+}
+
+public class PlayerPoint
+{
+    public int point;
 }
