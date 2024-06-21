@@ -4,6 +4,7 @@ public enum SocketEnum
     updateBrushPosition,
     updatePlatformPosition,
     updateCoin,
+    updateProof,
     isCollided,
     updateBrushRadius,
     updateLevel,

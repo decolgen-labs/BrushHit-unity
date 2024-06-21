@@ -14,7 +14,11 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
 {
     public Action onPlayerUpdatePoint;
     private Action _onSuccess;
+
+    [SerializeField] private GameManager _gameManager;
     private bool _isShowConnectWalletUI;
+    string userAddress = "0x04Ce066AF4C50AEe8febCB7F856109A312abc2011877955eCd2db6b2bAd56d87";
+    string contractAddress = "0x7bd89ba87f34b47facaeb4d408dadd1915d16a6c828d7ba55692eb705f0a5cc";
 
     protected override void ChildAwake()
     {
@@ -69,6 +73,7 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         string playerAddress = JSInteropManager.GetAccount();
         PlayerDataManager.Instance.SetPlayerData(playerAddress);
         UIManager.Ins.UpdateInfoPanel();
+        SyncPlayerPoint();
     }
 
     public void CheckUserBalance(string userAddress, string contractAddress, string selector, UnityRpcPlatform rpcPlatform)
@@ -89,20 +94,31 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
     public void SyncPlayerPoint()
     {
         Settings.apiurl = "https://starknet-mainnet.public.blastapi.io/rpc/v0_7";
-        string userAddress = "0x04Ce066AF4C50AEe8febCB7F856109A312abc2011877955eCd2db6b2bAd56d87";
-        string contractAddress = "0x7bd89ba87f34b47facaeb4d408dadd1915d16a6c828d7ba55692eb705f0a5cc";
 
         string[] calldata = new string[1];
         calldata[0] = userAddress;
         string calldataString = JsonUtility.ToJson(new ArrayWrapper { array = calldata });
-        // CheckUserBalance(userAddress, contractAddress, "getUserPoint", new UnityRpcPlatform());
-        Debug.Log("SyncPlayerPoint");
-        JSInteropManager.CallContract(contractAddress, "getUserPoint", calldataString, nameof(WalletConnectManager), nameof(Erc721Callback));
+        Debug.Log("data string: " + calldataString);
+        JSInteropManager.CallContract(contractAddress, "getUserPoint", calldataString, gameObject.name, "Erc721Callback");
     }
     public void Erc721Callback(string response)
     {
         JsonResponse jsonResponse = JsonUtility.FromJson<JsonResponse>(response);
         BigInteger balance = BigInteger.Parse(jsonResponse.result[0].Substring(2), NumberStyles.HexNumber);
         Debug.Log("Balance: " + balance);
+        PlayerDataManager.Instance.SetPlayerPoint((int)balance);
+        _gameManager.UpdateCoin((int)balance);
+    }
+    public void Claim()
+    {
+        Debug.Log("Claim");
+        string[] calldata = new string[3];
+        // calldata[0] = proofStruct.point.ToString();
+        // calldata[1] = proofStruct.timestamp.ToString();
+        // calldata[2] = proofStruct.proof.ToString();
+        Debug.Log("callData: " + calldata);
+        string callDataString = JsonUtility.ToJson(new ArrayWrapper { array = calldata });
+        Debug.Log(callDataString);
+        // JSInteropManager.CallContract(contractAddress, "rewardPoint", )
     }
 }

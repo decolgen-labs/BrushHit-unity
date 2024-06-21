@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Sockets;
+using Newtonsoft.Json;
 using NOOD;
 using SocketIOClient;
 using SocketIOClient.Newtonsoft.Json;
@@ -8,14 +10,23 @@ using UnityEngine.UI;
 
 using Debug = System.Diagnostics.Debug;
 
+public class ProofClass
+{
+    public string address;
+    public int point;
+    public int timestamp;
+    public string[] proof;
+}
+
 public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 {
     public Action<int> onUpdateCoin;
 
     public SocketIOUnity socket;
     public (Vector2 mainBrush, Vector2 otherBrush) _brushTuple;
-    public float _brushHeigh;
-    public bool _isSpawnCoin;
+    public float brushHeigh;
+    public bool isSpawnCoin;
+    public ProofClass proofStruct;
 
     #region Unity function
     protected override void ChildAwake()
@@ -66,23 +77,38 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         });
         socket.On(SocketEnum.spawnCoin.ToString(), (data) =>
         {
-            _isSpawnCoin = true;
+            isSpawnCoin = true;
         });
         socket.On(SocketEnum.updateCoin.ToString(), (coin) =>
         {
             onUpdateCoin?.Invoke(coin.GetValue<int>());
         });
+        socket.On(SocketEnum.updateProof.ToString(), (proof) =>
+        {
+            proofStruct = JsonConvert.DeserializeObject<ProofClass[]>(proof.ToString())[0];
+            UnityEngine.Debug.Log(proofStruct.proof[1]);
+            WalletConnectManager.Instance.Claim();
+        });
     }
     void Update()
     {
         socket.Emit(SocketEnum.update.ToString());    
+        if(Input.GetKeyDown(KeyCode.T))
+        {
+            Claim();
+        }
     }
     #endregion
+
+    public void Claim()
+    {
+        socket.Emit("claim", "0x04Ce066AF4C50AEe8febCB7F856109A312abc2011877955eCd2db6b2bAd56d87");
+    }
 
     #region Update socket
     public void UpdateBrushPosition(Vector3 mainBrush, Vector3 otherBrush)
     {
-        _brushHeigh = mainBrush.y;
+        brushHeigh = mainBrush.y;
         socket.Emit(SocketEnum.updateBrushPosition.ToString(), new object[] { mainBrush.x, mainBrush.z, otherBrush.x, otherBrush.z });
     }
     public void UpdatePlatformOffset(Vector3 position)
@@ -97,8 +123,8 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 
     public (Vector3 mainBrush, Vector3 otherBrush) GetBrushPosition()
     {
-        Vector3 mainBrush = new Vector3(_brushTuple.mainBrush.x, _brushHeigh, _brushTuple.mainBrush.y);
-        Vector3 otherBrush = new Vector3(_brushTuple.otherBrush.x, _brushHeigh, _brushTuple.otherBrush.y);
+        Vector3 mainBrush = new Vector3(_brushTuple.mainBrush.x, brushHeigh, _brushTuple.mainBrush.y);
+        Vector3 otherBrush = new Vector3(_brushTuple.otherBrush.x, brushHeigh, _brushTuple.otherBrush.y);
         return (mainBrush, otherBrush); 
     }
     public void PlayerInput()
@@ -111,8 +137,8 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     }
     public bool IsSpawnCoinThisLevel()
     {
-        bool result = _isSpawnCoin;
-        _isSpawnCoin = false;
+        bool result = isSpawnCoin;
+        isSpawnCoin = false;
         return result;
     }
 }
