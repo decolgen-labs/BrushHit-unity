@@ -131,19 +131,22 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
     public void Claim(ProofClass proofClass)
     {
         Settings.apiurl = "https://starknet-mainnet.public.blastapi.io/rpc/v0_7";
-        // string[] calldata = new string[3];
-        // calldata[0] = proofClass.point.ToString();
-        // calldata[1] = proofClass.timestamp.ToString();
-        // calldata[2] = JsonUtility.ToJson(proofClass);
+        string[] calldata = new string[2];
+        calldata[0] = proofClass.point.ToString();
+        calldata[1] = proofClass.timestamp.ToString();
+        string proofArray = $",[\"{proofClass.proof[0]}, {proofClass.proof[1]}\"]";
 
-        string callDataString = JsonUtility.ToJson(proofClass);
+        string callDataString = JsonUtility.ToJson(new ArrayWrapper{array = calldata});
+        callDataString = callDataString.Replace("]}", "");
+        callDataString = callDataString + proofArray + "]}";
+
         Debug.Log("callDataString: " + callDataString);
 #if UNITY_EDITOR
-        UnityRpcPlatform rpcPlatform = new UnityRpcPlatform();
-        ContractInteraction contractInteraction = new ContractInteraction(contractAddress, "rewardPoint", callDataString);
-        rpcPlatform.CallContract(contractInteraction, OnSuccess, OnError);
+        // UnityRpcPlatform rpcPlatform = new UnityRpcPlatform();
+        // TransactionInteraction contractInteraction = new TransactionInteraction(userAddress, contractAddress, "rewardPoint", callDataString, CairoVersion.Version1, "0xa2d9d3b14c", "0x534e5f474f45524c49", );
+        // rpcPlatform.CallContract(contractInteraction, OnSuccess, OnError);
 #elif UNITY_WEBGL
-        // JSInteropManager.CallContract(contractAddress, "rewardPoint", callDataString, gameObject.name, "ClaimCallback");
+        JSInteropManager.SendTransaction(contractAddress, "rewardPoint", callDataString, gameObject.name, "ClaimCallback");
 #endif
     }
 

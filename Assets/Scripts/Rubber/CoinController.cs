@@ -24,7 +24,7 @@ public class CoinController : MonoBehaviour
         {
             this.transform.DOScale(0, 0.5f);
         }, 0.2f);
-        SocketConnectManager.Instance.CoinCollect();
+        SocketConnectManager.Instance.CoinCollect(this.transform.position);
     }
 
     private void MoveUpDownAnimation()
