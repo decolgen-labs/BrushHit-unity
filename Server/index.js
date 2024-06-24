@@ -4,6 +4,12 @@ const {add_two_vectors, subtract_two_vectors} = require('./Vector');
 const {change_direction, rotatePointWithRadius, distance_between_two_point} = require('./brush');
 const http = require('http');
 const socket = require('socket.io');
+const express = require('express');
+const path = require('path');
+
+const app = express();
+const server = http.createServer(app);
+
 const {
   Account,
   stark,
@@ -11,7 +17,6 @@ const {
   typedData,
   RpcProvider,
 } = require('starknet');
-const server = http.createServer();
 const port = 11100;
 const RPC = 'https://starknet-sepolia.public.blastapi.io/rpc/v0_7';
 const provider = new RpcProvider({ nodeUrl: RPC });
@@ -30,12 +35,13 @@ var io = socket(server, {
     pingTimeout: 5000
 });
 
-io.use((socket, next) => {
-    if (socket.handshake.query.token === "UNITY") {
-        next();
-    } else {
-        next(new Error("Authentication error"));
-    }
+// Serve static files from the WebGL build directory
+const buildPath = path.join(__dirname, 'Build');
+app.use(express.static(buildPath));
+
+// Fallback to serve index.html for any route
+app.get('*', (req, res) => {
+  res.sendFile(path.join(buildPath, 'index.html'));
 });
 
 var _deltaTime = 0;
@@ -67,8 +73,9 @@ io.on('connection', socket => {
     _deltaTime = (new Date().getTime() - _currentTime) * 0.01;
 
     updateCalculate();
-    socket.emit('update', { data: _deltaTime });
-    socket.emit('updateBrushPosition', { mainBrush: _mainBrush, otherBrush: _otherBrush });
+    // socket.emit('update, { data: _deltaTime });
+    data = JSON.stringify({ mainBrush: _mainBrush, otherBrush: _otherBrush });
+    socket.emit('updateBrushPosition', data);
     _currentTime = new Date().getTime();
   });
 
@@ -80,19 +87,6 @@ io.on('connection', socket => {
 
   socket.on('playerTouch', (data) => {
     playerTouch();
-  });
-
-  // position is string with format (0.00)
-  socket.on('isCollided', (index, positionX, positionY) => {
-    var check = isBetweenTwoPoint(index, { x: positionX, y: positionY });
-    socket.emit('isCollided', { data: check });
-  });
-
-  socket.on('isTrue', (positionX, positionY) => {
-    if (check_true({ x: positionX, y: positionY }))
-    {
-      get_coin();
-    }
   });
 
   socket.on('updatePlatformPosition', (positionX, positionY) => {
@@ -111,10 +105,13 @@ io.on('connection', socket => {
     }
   });
 
-  socket.on('coinCollect', () => {
-    _isCoinCollected = true;
-    _collectedCoin++;
-    socket.emit('updateCoin', _collectedCoin);
+  socket.on('coinCollect', (positionX, positionY) => {
+    if (check_true({ x: positionX, y: positionY }))
+    {
+      _isCoinCollected = true;
+      _collectedCoin++;
+      socket.emit('updateCoin', _collectedCoin);
+    }
   });
 
   socket.on('claim', async (address) => {
@@ -214,7 +211,7 @@ function check_true(position)
 }
 
 server.listen(port, () => {
-  console.log('listening on *:' + port);
+  console.log('http://localhost:11100/');
 });
 
 module.exports = {_deltaTime}

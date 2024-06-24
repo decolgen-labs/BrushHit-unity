@@ -1,11 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Net.Sockets;
 using Newtonsoft.Json;
 using NOOD;
 using SocketIOClient;
-using SocketIOClient.Newtonsoft.Json;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 using Debug = System.Diagnostics.Debug;
@@ -21,6 +19,7 @@ public class ProofClass
 public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 {
     public Action<int> onUpdateCoin;
+    public Action<ProofClass> onClaim;
 
     public SocketIOUnity socket;
     public (Vector2 mainBrush, Vector2 otherBrush) _brushTuple;
@@ -32,92 +31,71 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     protected override void ChildAwake()
     {
         //TODO: check the Uri if Valid.
-        var uri = new Uri("http://localhost:11100");
-        socket = new SocketIOUnity(uri, new SocketIOOptions
-        {
-            Query = new Dictionary<string, string>
-                {
-                    {"token", "UNITY" }
-                }
-            ,
-            EIO = 4
-            ,
-            Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
-        });
-        socket.JsonSerializer = new NewtonsoftJsonSerializer();
-
-        socket.OnConnected += (sender, e) =>
-        {
-            Debug.Print("socket.OnConnected");
-        };
-        socket.OnPing += (sender, e) =>
-        {
-            Debug.Print("Ping");
-        };
-        socket.OnPong += (sender, e) =>
-        {
-            Debug.Print("Pong: " + e.TotalMilliseconds);
-        };
-        socket.OnDisconnected += (sender, e) =>
-        {
-            Debug.Print("disconnect: " + e);
-        };
-        socket.OnReconnectAttempt += (sender, e) =>
-        {
-            Debug.Print($"{DateTime.Now} Reconnecting: attempt = {e}");
-        };
-        ////
-
         Debug.Print("Connecting...");
-        socket.Connect();
+        JsSocketConnect.SocketIOInit();
 
-        socket.On(SocketEnum.updateBrushPosition.ToString(), (data) =>
-        {
-            _brushTuple = data.GetValue<SocketBrushPositionData>().GetTuple();
-        });
-        socket.On(SocketEnum.spawnCoin.ToString(), (data) =>
-        {
-            isSpawnCoin = true;
-        });
-        socket.On(SocketEnum.updateCoin.ToString(), (coin) =>
-        {
-            onUpdateCoin?.Invoke(coin.GetValue<int>());
-        });
-        socket.On(SocketEnum.updateProof.ToString(), (proof) =>
-        {
-            proofStruct = JsonConvert.DeserializeObject<ProofClass[]>(proof.ToString())[0];
-            UnityEngine.Debug.Log(proofStruct.proof[1]);
-            WalletConnectManager.Instance.Claim();
-        });
+        JsSocketConnect.RegisterUpdateBrushPosition(this.gameObject.name, nameof(UpdateBrushPos));
+        // JsSocketConnect.RegisterSpawnCoin(this.gameObject.name, nameof(SpawnCoin));
+        // JsSocketConnect.RegisterUpdateCoin(this.gameObject.name, nameof(UpdateCoin));
+        // JsSocketConnect.RegisterUpdateProof(this.gameObject.name, nameof(UpdateProof));
     }
     void Update()
     {
-        socket.Emit(SocketEnum.update.ToString());    
+        JsSocketConnect.EmitUpdate();
         if(Input.GetKeyDown(KeyCode.T))
         {
+            UnityEngine.Debug.Log("TryClaim");
             Claim();
+            // WalletConnectManager.Instance.SyncPlayerPoint();
         }
+    }
+    void OnDestroy()
+    {
+        socket.Disconnect();
+    }
+    #endregion
+
+    #region SocketEvent
+    private void UpdateBrushPos(string data)
+    {
+        // UnityEngine.Debug.Log("UpdateBrushPos: " + data.GetValue<SocketBrushPositionData>().GetTuple());
+        // _brushTuple = data.GetValue<SocketBrushPositionData>().GetTuple();
+        UnityEngine.Debug.Log("receive: " + data);
+    }
+    private void SpawnCoin()
+    {
+        isSpawnCoin = true;
+    }
+    private void UpdateCoin(SocketIOResponse data)
+    {
+        onUpdateCoin.Invoke(data.GetValue<int>());
+    }
+    private void UpdateProof(SocketIOResponse proof)
+    {
+        proofStruct = JsonConvert.DeserializeObject<ProofClass[]>(proof.ToString())[0];
+        UnityEngine.Debug.Log(proofStruct.proof[1]);
+        onClaim?.Invoke(proofStruct);
     }
     #endregion
 
     public void Claim()
     {
-        socket.Emit("claim", "0x04Ce066AF4C50AEe8febCB7F856109A312abc2011877955eCd2db6b2bAd56d87");
+        JsSocketConnect.EmitClaim("0x04Ce066AF4C50AEe8febCB7F856109A312abc2011877955eCd2db6b2bAd56d87");
     }
 
     #region Update socket
     public void UpdateBrushPosition(Vector3 mainBrush, Vector3 otherBrush)
     {
         brushHeigh = mainBrush.y;
-        socket.Emit(SocketEnum.updateBrushPosition.ToString(), new object[] { mainBrush.x, mainBrush.z, otherBrush.x, otherBrush.z });
+        JsSocketConnect.EmitUpdateBrushPosition(mainBrush.x, mainBrush.y, otherBrush.x, otherBrush.y);
     }
     public void UpdatePlatformOffset(Vector3 position)
     {
-        socket.Emit(SocketEnum.updatePlatformPosition.ToString(), new object[] { position.x, position.z });
+        JsSocketConnect.EmitUpdatePlatformPos(position.x, position.y);
     }
     public void UpdateLevel(int level)
     {
-        socket.Emit(SocketEnum.updateLevel.ToString(), level);
+        JsSocketConnect.EmitUpdateLevel(level);
     }
     #endregion
 
@@ -129,11 +107,11 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     }
     public void PlayerInput()
     {
-        socket.Emit(SocketEnum.playerTouch.ToString());
+        JsSocketConnect.EmitPlayerTouch();
     }
-    public void CoinCollect()
+    public void CoinCollect(Vector3 position)
     {
-        socket.Emit(SocketEnum.coinCollect.ToString());
+        JsSocketConnect.EmitCoinCollect(position.x, position.y);
     }
     public bool IsSpawnCoinThisLevel()
     {
