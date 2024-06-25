@@ -9,6 +9,12 @@ function change_direction()
 
 function rotatePointWithRadius(px, py, cx, cy, angle, radius) {
   // Translate point to the origin
+  cx = parseFloat(cx);
+  cy = parseFloat(cy);
+  angle = parseFloat(angle);
+  radius = parseFloat(radius);
+  px = parseFloat(px);
+  py = parseFloat(py);
   let translatedX = px - cx;
   let translatedY = py - cy;
 

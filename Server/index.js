@@ -45,7 +45,7 @@ app.get('*', (req, res) => {
 });
 
 var _deltaTime = 0;
-var _mainBrush = {x: 0, y : 0}, _otherBrush = {y: 0, y : 0};
+var _mainBrush = {x: 0, y : 0}, _otherBrush = {x: 0, y : 0};
 var _currentTime = 0;
 var _rotateSpeed = 0.2;
 var _radius = 4;
@@ -81,9 +81,9 @@ io.on('connection', socket => {
 
   // x, y is string with format (0.00)
   socket.on('setBrushPosition', (x1, y1, x2, y2) => {
-    _mainBrush = { x: x1 * 1, y: y1 * 1 };
-    _otherBrush = { x: x2 * 1, y: y2 * 1 };
-    console.log('receive: ' + x1 * 1+  y1 * 1+  x2 * 1+  y2 * 1);
+    _mainBrush = { x: parseFloat(x1), y: parseFloat(y1) };
+    _otherBrush = { x: parseFloat(x2), y: parseFloat(y2) };
+    console.log('receive: ' + typeof _mainBrush.x + ' ' + typeof _mainBrush.y + ' ' + typeof _otherBrush.x + ' ' + typeof _otherBrush.y);
   });
 
   socket.on('playerTouch', (data) => {
@@ -185,11 +185,15 @@ function rotateBrush()
 {
   let angle = _deltaTime * _rotateSpeed;
   _otherBrush = rotatePointWithRadius(_otherBrush.x, _otherBrush.y, _mainBrush.x, _mainBrush.y, angle, _radius)
+  console.log('otherBrush: ' + _otherBrush.x + ' ' + _otherBrush.y);
 }
 
 function playerTouch()
 {
   change_direction();
+  let temp = _mainBrush;
+  _mainBrush = _otherBrush;
+  _otherBrush = temp;
 }
 
 function check_true(position)
