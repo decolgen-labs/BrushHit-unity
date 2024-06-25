@@ -58,6 +58,7 @@
     },
     "dotnet.defaultSolution": "Brushit_unity.sln",
     "cSpell.words": [
+        "apiurl",
         "Braavos"
     ]
 }

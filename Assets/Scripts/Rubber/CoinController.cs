@@ -16,7 +16,7 @@ public class CoinController : MonoBehaviour
         this.transform.Rotate(0, 0, 100f * Time.deltaTime);
     }
 
-    public void OnCoinCollect()
+    public void OnCoinCollect(Vector3 position)
     {
         this.transform.DOKill();
         this.transform.DOMoveY(this.transform.position.y + 1f, 0.5f).SetEase(Ease.InBack);
@@ -24,7 +24,7 @@ public class CoinController : MonoBehaviour
         {
             this.transform.DOScale(0, 0.5f);
         }, 0.2f);
-        SocketConnectManager.Instance.CoinCollect(this.transform.position);
+        SocketConnectManager.Instance.CoinCollect(position);
     }
 
     private void MoveUpDownAnimation()

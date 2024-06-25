@@ -19,7 +19,7 @@ public class ProofClass
 
 public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 {
-    public Action<int> onUpdateCoin;
+    public Action<int> onCollectCoin;
     public Action<ProofClass> onClaim;
 
     public SocketIOUnity socket;
@@ -37,18 +37,17 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 
         JsSocketConnect.RegisterUpdateBrushPosition(this.gameObject.name, nameof(UpdateBrushPos));
         JsSocketConnect.RegisterSpawnCoin(this.gameObject.name, nameof(SpawnCoin));
-        JsSocketConnect.RegisterUpdateCoin(this.gameObject.name, nameof(UpdateCoin));
+        JsSocketConnect.RegisterUpdateCoin(this.gameObject.name, nameof(CollectCoinCallback));
         JsSocketConnect.RegisterUpdateProof(this.gameObject.name, nameof(UpdateProof));
     }
     void Update()
     {
         JsSocketConnect.EmitUpdate();
-        if(Input.GetKeyDown(KeyCode.T))
-        {
-            UnityEngine.Debug.Log("TryClaim");
-            Claim();
-            // WalletConnectManager.Instance.SyncPlayerPoint();
-        }
+        // if(Input.GetKeyDown(KeyCode.T))
+        // {
+        //     UnityEngine.Debug.Log("TryClaim");
+        //     Claim();
+        // }
     }
     void OnDestroy()
     {
@@ -73,13 +72,14 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     {
         isSpawnCoin = true;
     }
-    private void UpdateCoin(string data)
+    private void CollectCoinCallback(string data)
     {
-        onUpdateCoin.Invoke(JsonConvert.DeserializeObject<int>(data));
+        UnityEngine.Debug.Log("CollectCoin: " + data);
+        onCollectCoin.Invoke(JsonConvert.DeserializeObject<int>(data));
     }
     private void UpdateProof(string proof)
     {
-        proofStruct = JsonConvert.DeserializeObject<ProofClass[]>(proof.ToString())[0];
+        proofStruct = JsonConvert.DeserializeObject<ProofClass>(proof.ToString());
         UnityEngine.Debug.Log(proofStruct.proof[1]);
         onClaim?.Invoke(proofStruct);
     }
@@ -87,7 +87,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 
     public void Claim()
     {
-        JsSocketConnect.EmitClaim("0x04Ce066AF4C50AEe8febCB7F856109A312abc2011877955eCd2db6b2bAd56d87");
+        JsSocketConnect.EmitClaim(PlayerDataManager.Instance.GetPlayerAddress());
     }
 
     #region Update socket
@@ -121,7 +121,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     {
         JsSocketConnect.EmitCoinCollect(position.x.ToString(), position.y.ToString());
     }
-    public bool IsSpawnCoinThisLevel()
+    public bool IsSpawnCoin()
     {
         bool result = isSpawnCoin;
         isSpawnCoin = false;

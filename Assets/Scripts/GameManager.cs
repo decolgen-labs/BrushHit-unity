@@ -38,6 +38,7 @@ public class GameManager : MonoBehaviour
     public int Level { get; private set; }
     public int Stage { get; private set; }
     public int CoinCollected { get; private set; }
+    public int SahCoin { get; private set; }
 
     public bool IsFreezing { get; private set; }
     public bool IsImmortal { get; private set; }
@@ -58,11 +59,11 @@ public class GameManager : MonoBehaviour
         //this line to reduce the physics calculation
         Physics.reuseCollisionCallbacks = true;
         Init();
-        // SocketConnectManager.Instance.onUpdateCoin += UpdateCoin;
+        SocketConnectManager.Instance.onCollectCoin += CollectCoin;
     }
     void OnDestroy()
     {
-        // SocketConnectManager.Instance.onUpdateCoin -= UpdateCoin;
+        SocketConnectManager.Instance.onCollectCoin -= CollectCoin;
     }
     #endregion
 
@@ -127,9 +128,16 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UpdateCoin(int coin)
+    public void UpdateSahCoin(int coin)
     {
-        WalletConnectManager.Instance.SyncPlayerPoint();
+        SahCoin = coin;
+        _uiManager.UpdateScore();
+    }
+
+    public void CollectCoin(int coin)
+    {
+        CoinCollected = coin;
+        _uiManager.UpdateScore();
     }
 
     //this function to check when player click on UI so do not control the brush
@@ -235,7 +243,7 @@ public class GameManager : MonoBehaviour
         _brushTool.IsSpawning(false);
     }
 
-    public void IncreaseScore()
+    public void UpdateScore()
     {
         if (IsPlaying)
         {

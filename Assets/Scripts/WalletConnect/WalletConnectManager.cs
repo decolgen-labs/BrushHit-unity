@@ -84,6 +84,7 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         _onSuccess?.Invoke();
         string playerAddress = JSInteropManager.GetAccount();
         PlayerDataManager.Instance.SetPlayerData(playerAddress);
+        userAddress = playerAddress;
         UIManager.Ins.UpdateInfoPanel();
         SyncPlayerPoint();
     }
@@ -111,22 +112,16 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         calldata[0] = userAddress;
         string calldataString = JsonUtility.ToJson(new ArrayWrapper { array = calldata });
         Debug.Log("data string: " + calldataString);
-#if UNITY_EDITOR
-        UnityRpcPlatform rpcPlatform = new UnityRpcPlatform();
-        ContractInteraction contractInteraction = new ContractInteraction(contractAddress, "getUserPoint", userAddress);
-        rpcPlatform.CallContract(contractInteraction, OnSuccess, OnError);
-#elif UNITY_WEBGL
-        JSInteropManager.CallContract(contractAddress, "getUserPoint", calldataString, gameObject.name, "Erc721Callback");
-#endif
+        JSInteropManager.CallContract(contractAddress, "getUserPoint", calldataString, gameObject.name, nameof(PlayerPointCallback));
     }
 
-    public void Erc721Callback(string response)
+    public void PlayerPointCallback(string response)
     {
         JsonResponse jsonResponse = JsonUtility.FromJson<JsonResponse>(response);
         BigInteger balance = BigInteger.Parse(jsonResponse.result[0].Substring(2), NumberStyles.HexNumber);
         Debug.Log("Balance: " + balance);
         PlayerDataManager.Instance.SetPlayerPoint((int)balance);
-        _gameManager.UpdateCoin((int)balance);
+        _gameManager.UpdateSahCoin((int)balance);
     }
     public void Claim(ProofClass proofClass)
     {
@@ -134,20 +129,14 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         string[] calldata = new string[2];
         calldata[0] = proofClass.point.ToString();
         calldata[1] = proofClass.timestamp.ToString();
-        string proofArray = $",[\"{proofClass.proof[0]}, {proofClass.proof[1]}\"]";
+        string proofArray = $",[\"{proofClass.proof[0]}\", \"{proofClass.proof[1]}\"]";
 
         string callDataString = JsonUtility.ToJson(new ArrayWrapper{array = calldata});
         callDataString = callDataString.Replace("]}", "");
         callDataString = callDataString + proofArray + "]}";
 
         Debug.Log("callDataString: " + callDataString);
-#if UNITY_EDITOR
-        // UnityRpcPlatform rpcPlatform = new UnityRpcPlatform();
-        // TransactionInteraction contractInteraction = new TransactionInteraction(userAddress, contractAddress, "rewardPoint", callDataString, CairoVersion.Version1, "0xa2d9d3b14c", "0x534e5f474f45524c49", );
-        // rpcPlatform.CallContract(contractInteraction, OnSuccess, OnError);
-#elif UNITY_WEBGL
         JSInteropManager.SendTransaction(contractAddress, "rewardPoint", callDataString, gameObject.name, "ClaimCallback");
-#endif
     }
 
     public void ClaimCallback(string response)

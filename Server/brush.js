@@ -15,6 +15,7 @@ function rotatePointWithRadius(px, py, cx, cy, angle, radius) {
   radius = parseFloat(radius);
   px = parseFloat(px);
   py = parseFloat(py);
+  
   let translatedX = px - cx;
   let translatedY = py - cy;
 
@@ -41,37 +42,12 @@ function rotatePointWithRadius(px, py, cx, cy, angle, radius) {
   return { x: finalX, y: finalY };
 }
 
-function isBetweenTwoPoint(index, position) 
-{
-  var check = false;
-  var dxc = position.x - _mainBrush.x;
-  var dyc = position.y - _mainBrush.y;
-  var dxl = _otherBrush.x - _mainBrush.x;
-  var dyl = _otherBrush.y - _mainBrush.y;
-  var cross = dxc * dyl - dyc * dxl;
-
-  if (parseFloat(cross.toFixed(0)) == 0) {
-    if (Math.abs(dxl) >= Math.abs(dyl)) {
-      check = dxl > 0 ?
-        _mainBrush.x <= position.x && position.x <= _otherBrush.x :
-        _otherBrush.x <= position.x && position.x <= _mainBrush.x;
-    }
-    else {
-      check = dyl > 0 ?
-        _mainBrush.y <= position.y && position.y <= _otherBrush.y :
-        _otherBrush.y <= position.y && position.y <= _mainBrush.y;
-    }
-    console.log(check);
-  }
-  else{
-    console.log('false');
-  }
-
-  return check;
-}
-
 function distance_between_two_point(x1, y1, x2, y2)
 {
+  x1 = parseFloat(x1);
+  y1 = parseFloat(y1);
+  x2 = parseFloat(x2);
+  y2 = parseFloat(y2);
   return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1),2));
 }
 

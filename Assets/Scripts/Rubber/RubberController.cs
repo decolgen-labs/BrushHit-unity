@@ -99,9 +99,9 @@ public class RubberController : MonoBehaviour
             gameObject.tag = "Untagged";
             if(_coinController != null)
             {
-                _coinController.OnCoinCollect();
+                _coinController.OnCoinCollect(this.transform.position);
             }
-            _gameManager.IncreaseScore();
+            _gameManager.UpdateScore();
         }
     }
 

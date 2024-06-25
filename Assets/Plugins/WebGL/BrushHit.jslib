@@ -26,7 +26,7 @@ mergeInto( LibraryManager.library,{
                 SendMessage(this.updateCoinObjectStr, this.updateCoinMethodStr, collectedCoin);
         });
         socket.on('updateProof', (proof) => {
-            if(this.updateProofMethodStr && thi.updateProofObjectStr)
+            if(this.updateProofMethodStr && this.updateProofObjectStr)
                 SendMessage(this.updateProofObjectStr, this.updateProofMethodStr, proof);
         });
 
