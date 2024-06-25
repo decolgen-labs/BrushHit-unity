@@ -6,6 +6,7 @@ const http = require('http');
 const socket = require('socket.io');
 const express = require('express');
 const path = require('path');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
@@ -32,11 +33,13 @@ const account = new Account(provider, ACCOUNT_ADDRESS, PRIVATE_KEY);
 
 var io = socket(server, {
     pingInterval: 10000,
-    pingTimeout: 5000
+    pingTimeout: 5000,
+    cors:'*'
 });
 
 // Serve static files from the WebGL build directory
 const buildPath = path.join(__dirname, 'Build');
+app.use(cors());
 app.use(express.static(buildPath));
 
 // Fallback to serve index.html for any route
@@ -98,12 +101,11 @@ io.on('connection', socket => {
     {
       _level = level;
       _isCoinCollected = false;
-      socket.emit('spawnCoin');  
+      // socket.emit('spawnCoin', (!_isCoinCollected).toString());
+      // console.log(!_isCoinCollected)
     }
-    if (_isCoinCollected == false)
-    {
-      socket.emit('spawnCoin');  
-    }
+    socket.emit('spawnCoin', (!_isCoinCollected).toString());  
+    console.log(!_isCoinCollected)
   });
 
   socket.on('coinCollect', (positionX, positionY) => {

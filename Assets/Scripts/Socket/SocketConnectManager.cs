@@ -68,9 +68,10 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
             // UnityEngine.Debug.Log("receive: " + data);
         }
     }
-    private void SpawnCoin()
+    private void SpawnCoin(string valueBool)
     {
-        isSpawnCoin = true;
+        UnityEngine.Debug.Log("spawnCoin: " + valueBool);
+        isSpawnCoin = JsonConvert.DeserializeObject<bool>(valueBool);
     }
     private void CollectCoinCallback(string data)
     {
@@ -124,6 +125,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     public bool IsSpawnCoin()
     {
         bool result = isSpawnCoin;
+        UnityEngine.Debug.Log("GetSpawnCoin: " + isSpawnCoin);
         isSpawnCoin = false;
         return result;
     }

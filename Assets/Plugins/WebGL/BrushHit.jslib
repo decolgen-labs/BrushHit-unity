@@ -6,7 +6,7 @@ mergeInto( LibraryManager.library,{
             return;
         }
 
-        var socket = io();
+        var socket = io('http://localhost:11100');
 
         socket.on('connect', () => {
             socket.isReady = true;
@@ -17,9 +17,9 @@ mergeInto( LibraryManager.library,{
             if(this.updateBrushPositionMethodStr && this.updateBrushPositionObjectStr)
                 SendMessage(this.updateBrushPositionObjectStr, this.updateBrushPositionMethodStr, data);
         });
-        socket.on('spawnCoin', () => {
+        socket.on('spawnCoin', (bool) => {
             if(this.spawnCoinMethodStr && this.spawnCoinObjectStr)
-                SendMessage(this.spawnCoinObjectStr, this.spawnCoinMethodStr);
+                SendMessage(this.spawnCoinObjectStr, this.spawnCoinMethodStr, bool);
         });
         socket.on('updateCoin', (collectedCoin) => {
             if(this.updateCoinMethodStr && this.updateCoinObjectStr)
