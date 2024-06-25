@@ -59,10 +59,13 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     #region SocketEvent
     private void UpdateBrushPos(string data)
     {
-        UnityEngine.Debug.Log("UpdateBrushPos: " + data);
         if(!string.IsNullOrEmpty(data))
         {
-            _brushTuple = JsonConvert.DeserializeObject<SocketBrushPositionData>(data).GetTuple();
+            try{
+                _brushTuple = JsonConvert.DeserializeObject<SocketBrushPositionData>(data).GetTuple();
+            }catch{
+                UnityEngine.Debug.Log("UpdateBrushPos: " + data);
+            }
             // UnityEngine.Debug.Log("receive: " + data);
         }
     }
@@ -70,11 +73,11 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     {
         isSpawnCoin = true;
     }
-    private void UpdateCoin(SocketIOResponse data)
+    private void UpdateCoin(string data)
     {
-        onUpdateCoin.Invoke(data.GetValue<int>());
+        onUpdateCoin.Invoke(JsonConvert.DeserializeObject<int>(data));
     }
-    private void UpdateProof(SocketIOResponse proof)
+    private void UpdateProof(string proof)
     {
         proofStruct = JsonConvert.DeserializeObject<ProofClass[]>(proof.ToString())[0];
         UnityEngine.Debug.Log(proofStruct.proof[1]);
