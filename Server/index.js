@@ -83,7 +83,6 @@ io.on('connection', socket => {
   socket.on('setBrushPosition', (x1, y1, x2, y2) => {
     _mainBrush = { x: parseFloat(x1), y: parseFloat(y1) };
     _otherBrush = { x: parseFloat(x2), y: parseFloat(y2) };
-    console.log('receive: ' + typeof _mainBrush.x + ' ' + typeof _mainBrush.y + ' ' + typeof _otherBrush.x + ' ' + typeof _otherBrush.y);
   });
 
   socket.on('playerTouch', (data) => {
@@ -91,7 +90,7 @@ io.on('connection', socket => {
   });
 
   socket.on('updatePlatformPosition', (positionX, positionY) => {
-    _platformOffset = {x: positionX, y: positionY };
+    _platformOffset = {x: parseFloat(positionX), y: parseFloat(positionY) };
   });
 
   socket.on('updateLevel', (level) => {
@@ -99,6 +98,7 @@ io.on('connection', socket => {
     {
       _level = level;
       _isCoinCollected = false;
+      socket.emit('spawnCoin');  
     }
     if (_isCoinCollected == false)
     {
@@ -107,18 +107,22 @@ io.on('connection', socket => {
   });
 
   socket.on('coinCollect', (positionX, positionY) => {
-    if (check_true({ x: positionX, y: positionY }))
+    positionX = parseFloat(positionX);
+    positionY = parseFloat(positionY);
+    console.log('coinCollect: ' + _isCoinCollected);
+    if (_isCoinCollected == false && check_true({ x: positionX, y: positionY }))
     {
       _isCoinCollected = true;
       _collectedCoin++;
-      socket.emit('updateCoin', _collectedCoin);
+      socket.emit('updateCoin', _collectedCoin.toString());
     }
   });
 
   socket.on('claim', async (address) => {
     _playerAddress = address;
     var proof = await sign_transaction();
-    socket.emit('updateProof', proof);
+    console.log(JSON.stringify(proof));
+    socket.emit('updateProof', JSON.stringify(proof));
   });
 })
 
@@ -171,7 +175,7 @@ async function sign_transaction()
 
   const signature2 = await account.signMessage(typedDataValidate);
   const proof = stark.formatSignature(signature2);
-  console.log(proof);
+  // console.log(proof);
   return {address: _playerAddress, point: _collectedCoin, timestamp: time, proof: proof}
 }
 
@@ -185,7 +189,6 @@ function rotateBrush()
 {
   let angle = _deltaTime * _rotateSpeed;
   _otherBrush = rotatePointWithRadius(_otherBrush.x, _otherBrush.y, _mainBrush.x, _mainBrush.y, angle, _radius)
-  console.log('otherBrush: ' + _otherBrush.x + ' ' + _otherBrush.y);
 }
 
 function playerTouch()

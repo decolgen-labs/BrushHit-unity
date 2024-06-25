@@ -36,10 +36,10 @@ public class InfoPanelUI : MonoBehaviour
         }
     }
 
-    public void RefreshPoint(int point)
+    public void RefreshPoint(int collectedCoin, int sahCoin)
     {
-        Debug.Log("RefreshPoint: " + point);
-        _point.text = point.ToString();
+        _point.text = collectedCoin.ToString();
+        _sahPoint.text = sahCoin.ToString();
     }
 
     private void Claim()

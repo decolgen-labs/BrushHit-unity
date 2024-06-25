@@ -125,9 +125,8 @@ public class UIManager : MonoBehaviour
     {
         if(_scoreText != null)
         {
-            Debug.Log("UI Update score: " + _gameManager.CoinCollected);
             _scoreText.text = _gameManager.CoinCollected.ToString();
-            _infoPanelUI.RefreshPoint(_gameManager.CoinCollected);
+            _infoPanelUI.RefreshPoint(_gameManager.CoinCollected, _gameManager.SahCoin);
         }
     }
 

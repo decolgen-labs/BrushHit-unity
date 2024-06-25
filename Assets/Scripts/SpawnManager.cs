@@ -63,7 +63,7 @@ public class SpawnManager : MonoBehaviour
             }
         }
 
-        if(SocketConnectManager.Instance.IsSpawnCoinThisLevel())
+        if(SocketConnectManager.Instance.IsSpawnCoin())
         {
             GameObject rubber = _rubbers.GetRandom();
             rubber.GetComponent<RubberController>().SetCoin(true);
