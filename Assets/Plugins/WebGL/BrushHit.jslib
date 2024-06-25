@@ -68,7 +68,9 @@ mergeInto( LibraryManager.library,{
     EmitUpdateBrushPosition:function(x1, y1, x2, y2)
     {
         if(window.unitySocket)    
-            window.unitySocket.emit('updateBrushPosition', (x1, y1, x2, y2));
+        {
+            window.unitySocket.emit('setBrushPosition', UTF8ToString(x1), UTF8ToString(y1), UTF8ToString(x2), UTF8ToString(y2));
+        }
     },
     EmitPlayerTouch:function()
     {
@@ -78,27 +80,27 @@ mergeInto( LibraryManager.library,{
     EmitCoinCollect:function(posX, posY)
     {
         if(window.unitySocket)    
-            window.unitySocket.emit('coinCollect', (posX, posY));
+            window.unitySocket.emit('coinCollect', UTF8ToString(posX), UTF8ToString(posY));
     },
     EmitUpdatePlatformPos:function(posX, posY)
     {
         if(window.unitySocket)    
-            window.unitySocket.emit('updatePlatformPosition', (posX, posY));
+            window.unitySocket.emit('updatePlatformPosition', UTF8ToString(posX), UTF8ToString(posY));
     },
     EmitUpdateLevel:function(level)
     {
         if(window.unitySocket)    
-            window.unitySocket.emit('updateLevel', level);
+            window.unitySocket.emit('updateLevel', UTF8ToString(level));
     },
     EmitCoinCollect:function(posX, posY)
     {
         if(window.unitySocket)    
-            window.unitySocket.emit('coinCollect', (posX, posY));
+            window.unitySocket.emit('coinCollect', UTF8ToString(posX), UTF8ToString(posY));
     },
     EmitClaim:function(accountAddress)
     {
         if(window.unitySocket)    
-            window.unitySocket.emit('claim', accountAddress);
+            window.unitySocket.emit('claim', UTF8ToString(accountAddress));
     },
     
 
