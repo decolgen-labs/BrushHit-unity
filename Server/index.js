@@ -45,11 +45,11 @@ app.get('*', (req, res) => {
 });
 
 var _deltaTime = 0;
-var _mainBrush = {'x': 0, 'y' : 0}, _otherBrush = {'x': 0, 'y' : 0};
+var _mainBrush = {x: 0, y : 0}, _otherBrush = {y: 0, y : 0};
 var _currentTime = 0;
 var _rotateSpeed = 0.2;
 var _radius = 4;
-var _platformOffset = {'x': 0, 'y' : 0};
+var _platformOffset = {x: 0, y : 0};
 var _currentPoint;
 var _previousPoint;
 var _level = 0; // mỗi level có 5 stage nên mỗi lần thay đổi level là người chơi đã chơi 5 màn
@@ -74,15 +74,16 @@ io.on('connection', socket => {
 
     updateCalculate();
     // socket.emit('update, { data: _deltaTime });
-    data = JSON.stringify({ mainBrush: _mainBrush, otherBrush: _otherBrush });
-    socket.emit('updateBrushPosition', data);
+    let stringData = JSON.stringify({ mainBrush: _mainBrush, otherBrush: _otherBrush });
+    socket.emit('updateBrushPosition', stringData);
     _currentTime = new Date().getTime();
   });
 
   // x, y is string with format (0.00)
-  socket.on('updateBrushPosition', (x1, y1, x2, y2) => {
-    _mainBrush = { x: x1, y: y1 };
-    _otherBrush = { x: x2, y: y2 };
+  socket.on('setBrushPosition', (x1, y1, x2, y2) => {
+    _mainBrush = { x: x1 * 1, y: y1 * 1 };
+    _otherBrush = { x: x2 * 1, y: y2 * 1 };
+    console.log('receive: ' + x1 * 1+  y1 * 1+  x2 * 1+  y2 * 1);
   });
 
   socket.on('playerTouch', (data) => {
@@ -174,15 +175,6 @@ async function sign_transaction()
   return {address: _playerAddress, point: _collectedCoin, timestamp: time, proof: proof}
 }
 
-function get_coin()
-{
-  if (_isCoinCollected == false)
-  {
-    // get coin in this code block
-    _isCoinCollected = true;
-  }
-}
-
 function updateCalculate()
 {
   rotateBrush();
@@ -198,10 +190,6 @@ function rotateBrush()
 function playerTouch()
 {
   change_direction();
-  if (_currentPoint != _previousPoint)
-  {
-    _totalScore = (_currentPoint - _previousPoint) * 2;
-  }
 }
 
 function check_true(position)

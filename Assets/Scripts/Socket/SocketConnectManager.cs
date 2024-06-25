@@ -2,6 +2,7 @@ using System;
 using Newtonsoft.Json;
 using NOOD;
 using SocketIOClient;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UI;
@@ -35,9 +36,9 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         JsSocketConnect.SocketIOInit();
 
         JsSocketConnect.RegisterUpdateBrushPosition(this.gameObject.name, nameof(UpdateBrushPos));
-        // JsSocketConnect.RegisterSpawnCoin(this.gameObject.name, nameof(SpawnCoin));
-        // JsSocketConnect.RegisterUpdateCoin(this.gameObject.name, nameof(UpdateCoin));
-        // JsSocketConnect.RegisterUpdateProof(this.gameObject.name, nameof(UpdateProof));
+        JsSocketConnect.RegisterSpawnCoin(this.gameObject.name, nameof(SpawnCoin));
+        JsSocketConnect.RegisterUpdateCoin(this.gameObject.name, nameof(UpdateCoin));
+        JsSocketConnect.RegisterUpdateProof(this.gameObject.name, nameof(UpdateProof));
     }
     void Update()
     {
@@ -58,9 +59,12 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     #region SocketEvent
     private void UpdateBrushPos(string data)
     {
-        // UnityEngine.Debug.Log("UpdateBrushPos: " + data.GetValue<SocketBrushPositionData>().GetTuple());
-        // _brushTuple = data.GetValue<SocketBrushPositionData>().GetTuple();
-        UnityEngine.Debug.Log("receive: " + data);
+        UnityEngine.Debug.Log("UpdateBrushPos: " + data);
+        if(!string.IsNullOrEmpty(data))
+        {
+            _brushTuple = JsonConvert.DeserializeObject<SocketBrushPositionData>(data).GetTuple();
+            // UnityEngine.Debug.Log("receive: " + data);
+        }
     }
     private void SpawnCoin()
     {
@@ -84,18 +88,19 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     }
 
     #region Update socket
-    public void UpdateBrushPosition(Vector3 mainBrush, Vector3 otherBrush)
+    public void SetBrushPosition(Vector3 mainBrush, Vector3 otherBrush)
     {
         brushHeigh = mainBrush.y;
-        JsSocketConnect.EmitUpdateBrushPosition(mainBrush.x, mainBrush.y, otherBrush.x, otherBrush.y);
+        UnityEngine.Debug.Log($"Send: {mainBrush.x} {mainBrush.z}, {otherBrush.x} {otherBrush.z}" );
+        JsSocketConnect.EmitUpdateBrushPosition(mainBrush.x.ToString(), mainBrush.z.ToString(), otherBrush.x.ToString(), otherBrush.z.ToString());
     }
     public void UpdatePlatformOffset(Vector3 position)
     {
-        JsSocketConnect.EmitUpdatePlatformPos(position.x, position.y);
+        JsSocketConnect.EmitUpdatePlatformPos(position.x.ToString(), position.y.ToString());
     }
     public void UpdateLevel(int level)
     {
-        JsSocketConnect.EmitUpdateLevel(level);
+        JsSocketConnect.EmitUpdateLevel(level.ToString());
     }
     #endregion
 
@@ -111,12 +116,17 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     }
     public void CoinCollect(Vector3 position)
     {
-        JsSocketConnect.EmitCoinCollect(position.x, position.y);
+        JsSocketConnect.EmitCoinCollect(position.x.ToString(), position.y.ToString());
     }
     public bool IsSpawnCoinThisLevel()
     {
         bool result = isSpawnCoin;
         isSpawnCoin = false;
         return result;
+    }
+
+    public void Log(string value)
+    {
+        UnityEngine.Debug.Log(value);
     }
 }

@@ -58,10 +58,10 @@ public class BrushController : MonoBehaviour
         SocketConnectManager.Instance.UpdatePlatformOffset(Vector3.zero);
         if(spawnPoint != null)
         {
-            SocketConnectManager.Instance.UpdateBrushPosition(_spawnPosition + _offset, GetRotateBrush().transform.position);
+            SocketConnectManager.Instance.SetBrushPosition(_spawnPosition + _offset, GetRotateBrush().transform.position);
         }
         else
-            SocketConnectManager.Instance.UpdateBrushPosition(_mainBrush.transform.position, GetRotateBrush().transform.position);
+            SocketConnectManager.Instance.SetBrushPosition(_mainBrush.transform.position, GetRotateBrush().transform.position);
     }
     void Update()
     {
@@ -152,7 +152,6 @@ public class BrushController : MonoBehaviour
         _camera.UpdateTarget(_mainBrush);
 
         _audioSource.PlayOneShot(_brushSFX, 1f);
-        SocketConnectManager.Instance.UpdateBrushPosition(_mainBrush.transform.position, GetRotateBrush().transform.position);
     }
 
     IEnumerator EnableAnimators()

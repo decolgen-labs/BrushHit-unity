@@ -22,15 +22,15 @@ public class JsSocketConnect
     [DllImport("__Internal")]
     public static extern void EmitUpdate();
     [DllImport("__Internal")]
-    public static extern void EmitUpdateBrushPosition(float x1, float y1, float x2, float y2);
+    public static extern void EmitUpdateBrushPosition(string x1, string y1, string x2, string y2);
     [DllImport("__Internal")]
-    public static extern void EmitUpdatePlatformPos(float x, float y);
+    public static extern void EmitUpdatePlatformPos(string x, string y);
     [DllImport("__Internal")]
-    public static extern void EmitUpdateLevel(int level);
+    public static extern void EmitUpdateLevel(string level);
     [DllImport("__Internal")]
     public static extern void EmitPlayerTouch();
     [DllImport("__Internal")]
-    public static extern void EmitCoinCollect(float positionX, float positionY);
+    public static extern void EmitCoinCollect(string positionX, string positionY);
     [DllImport("__Internal")]
     public static extern void EmitClaim(string accountAddress);
     #endregion
