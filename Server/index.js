@@ -97,15 +97,16 @@ io.on('connection', socket => {
   });
 
   socket.on('updateLevel', (level) => {
+    if (level == 0)
+    {
+      _level = level; // Player dead and reset server _level to 0
+    }
     if(level != _level)
     {
       _level = level;
       _isCoinCollected = false;
-      // socket.emit('spawnCoin', (!_isCoinCollected).toString());
-      // console.log(!_isCoinCollected)
     }
     socket.emit('spawnCoin', (!_isCoinCollected).toString());  
-    console.log(!_isCoinCollected)
   });
 
   socket.on('coinCollect', (positionX, positionY) => {
@@ -118,6 +119,7 @@ io.on('connection', socket => {
       _collectedCoin++;
       socket.emit('updateCoin', _collectedCoin.toString());
     }
+    socket.emit('spawnCoin', (!_isCoinCollected).toString());  
   });
 
   socket.on('claim', async (address) => {
