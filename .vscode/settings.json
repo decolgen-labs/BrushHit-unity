@@ -56,7 +56,7 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Brushit_unity.sln",
+    "dotnet.defaultSolution": "BrushHit.sln",
     "cSpell.words": [
         "apiurl",
         "Braavos"

@@ -26,9 +26,12 @@ mergeInto(LibraryManager.library, {
   },
 
   IsConnected: function () {
-    return (
-      window.starknet_argentX.isConnected || window.starknet_braavos.isConnected
-    );
+    let result = false;
+    if(window.starknet_argentX)
+      result = window.starknet_argentX.isConnected
+    if(result == false && window.starknet_braavos)
+      result = window.starknet_braavos.isConnected
+    return result
   },
 
   GetAccount: function () {
