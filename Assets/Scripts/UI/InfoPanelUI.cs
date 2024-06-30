@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
+using NOOD;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -44,7 +45,11 @@ public class InfoPanelUI : MonoBehaviour
 
     private void Claim()
     {
-
+        SocketConnectManager.Instance.Claim();
+        NoodyCustomCode.StartDelayFunction(() =>
+        {
+            WalletConnectManager.Instance.SyncPlayerPoint();
+        }, 0.5f);
     }
     private void LogOut()
     {

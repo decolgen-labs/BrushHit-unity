@@ -125,9 +125,9 @@ public class UIManager : MonoBehaviour
     {
         if(_scoreText != null)
         {
-            _scoreText.text = _gameManager.CoinCollected.ToString();
-            _infoPanelUI.RefreshPoint(_gameManager.CoinCollected, _gameManager.SahCoin);
+            _scoreText.text = PlayerDataManager.Instance.GetPlayerIngamePoint().ToString();
         }
+        _infoPanelUI.RefreshPoint(PlayerDataManager.Instance.GetPlayerIngamePoint(), PlayerDataManager.Instance.GetPlayerSahPoint());
     }
 
     //Function to edit notification text

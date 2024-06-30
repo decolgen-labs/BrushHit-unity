@@ -120,8 +120,8 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         JsonResponse jsonResponse = JsonUtility.FromJson<JsonResponse>(response);
         BigInteger balance = BigInteger.Parse(jsonResponse.result[0].Substring(2), NumberStyles.HexNumber);
         Debug.Log("Balance: " + balance);
-        PlayerDataManager.Instance.SetPlayerPoint((int)balance);
-        _gameManager.UpdateSahCoin((int)balance);
+        PlayerDataManager.Instance.SetPlayerSahPoint((int)balance);
+        _gameManager.UpdatePoints();
     }
     public void Claim(ProofClass proofClass)
     {
@@ -135,12 +135,22 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         callDataString = callDataString.Replace("]}", "");
         callDataString = callDataString + proofArray + "]}";
 
-        Debug.Log("callDataString: " + callDataString);
+        // Debug.Log("callDataString: " + callDataString);
         JSInteropManager.SendTransaction(contractAddress, "rewardPoint", callDataString, gameObject.name, "ClaimCallback");
     }
 
     public void ClaimCallback(string response)
     {
-        Debug.Log("Response: " + response);
+        if(response == "User abort")
+        {
+            // user decline
+            Debug.Log("Response: " + response);
+        }
+        else
+        {
+            // user claim
+            SyncPlayerPoint();
+            SocketConnectManager.Instance.EmitAfterClaim();
+        }
     }
 }

@@ -33,5 +33,7 @@ public class JsSocketConnect
     public static extern void EmitCoinCollect(string positionX, string positionY);
     [DllImport("__Internal")]
     public static extern void EmitClaim(string accountAddress);
+    [DllImport("__Internal")]
+    public static extern void EmitAfterClaim();
     #endregion
 }
