@@ -5,7 +5,8 @@ using UnityEngine;
 
 public class PlayerDataManager : MonoBehaviorInstance<PlayerDataManager>
 {
-    private int _playerPoint;
+    private int _playerSahPoint;
+    private int _playerIngamePoint;
 
     public bool IsConnected()
     {
@@ -21,9 +22,13 @@ public class PlayerDataManager : MonoBehaviorInstance<PlayerDataManager>
     {
         PlayerPrefs.SetString("PlayerAddress", playerAddress);
     }
-    public void SetPlayerPoint(int point)
+    public void SetPlayerSahPoint(int point)
     {
-        _playerPoint = point;
+        _playerSahPoint = point;
+    }
+    public void SetPlayerIngamePoint(int point)
+    {
+        _playerIngamePoint = point;
     }
     #endregion
 
@@ -36,9 +41,13 @@ public class PlayerDataManager : MonoBehaviorInstance<PlayerDataManager>
         return PlayerPrefs.GetString("PlayerAddress");
 #endif
     }
-    public float GetPlayerPoint()
+    public int GetPlayerIngamePoint()
     {
-        return _playerPoint;
+        return _playerIngamePoint;
+    }
+    public int GetPlayerSahPoint()
+    {
+        return _playerSahPoint;
     }
     #endregion
 

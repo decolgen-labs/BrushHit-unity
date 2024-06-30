@@ -37,8 +37,6 @@ public class GameManager : MonoBehaviour
     public GameObject _levelData { get; private set; }
     public int Level { get; private set; }
     public int Stage { get; private set; }
-    public int CoinCollected { get; private set; }
-    public int SahCoin { get; private set; }
 
     public bool IsFreezing { get; private set; }
     public bool IsImmortal { get; private set; }
@@ -59,11 +57,6 @@ public class GameManager : MonoBehaviour
         //this line to reduce the physics calculation
         Physics.reuseCollisionCallbacks = true;
         Init();
-        SocketConnectManager.Instance.onCollectCoin += CollectCoin;
-    }
-    void OnDestroy()
-    {
-        SocketConnectManager.Instance.onCollectCoin -= CollectCoin;
     }
     #endregion
 
@@ -128,17 +121,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    public void UpdateSahCoin(int coin)
+    public void UpdatePoints()
     {
-        SahCoin = coin;
         _uiManager.UpdateScore();
     }
 
-    public void CollectCoin(int coin)
+    public void UpdateSahCoin(int coin)
     {
-        CoinCollected = coin;
+        PlayerDataManager.Instance.SetPlayerSahPoint(coin);
         _uiManager.UpdateScore();
     }
+
 
     //this function to check when player click on UI so do not control the brush
     public bool CheckClickUI()

@@ -6,7 +6,8 @@ mergeInto( LibraryManager.library,{
             return;
         }
 
-        var socket = io('http://localhost:11100');
+        var socket = io('http://localhost:5005/');
+        // var socket = io('https://starksweep-socket.starkarcade.com/');
 
         socket.on('connect', () => {
             socket.isReady = true;
@@ -101,6 +102,11 @@ mergeInto( LibraryManager.library,{
     {
         if(window.unitySocket)    
             window.unitySocket.emit('claim', UTF8ToString(accountAddress));
+    },
+    EmitAfterClaim:function()
+    {
+        if(window.unitySocket)
+            window.unitySocket.emit('afterClaim');
     },
     
 

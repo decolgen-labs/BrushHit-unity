@@ -19,7 +19,6 @@ public class ProofClass
 
 public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 {
-    public Action<int> onCollectCoin;
     public Action<ProofClass> onClaim;
 
     public SocketIOUnity socket;
@@ -76,7 +75,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     private void CollectCoinCallback(string data)
     {
         UnityEngine.Debug.Log("CollectCoin: " + data);
-        onCollectCoin.Invoke(JsonConvert.DeserializeObject<int>(data));
+        PlayerDataManager.Instance.SetPlayerIngamePoint(JsonConvert.DeserializeObject<int>(data));
     }
     private void UpdateProof(string proof)
     {
@@ -90,7 +89,10 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     {
         JsSocketConnect.EmitClaim(PlayerDataManager.Instance.GetPlayerAddress());
     }
-
+    public void EmitAfterClaim()
+    {
+        JsSocketConnect.EmitAfterClaim();
+    }
     #region Update socket
     public void SetBrushPosition(Vector3 mainBrush, Vector3 otherBrush)
     {
@@ -100,7 +102,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     }
     public void UpdatePlatformOffset(Vector3 position)
     {
-        JsSocketConnect.EmitUpdatePlatformPos(position.x.ToString(), position.y.ToString());
+        JsSocketConnect.EmitUpdatePlatformPos(position.x.ToString(), position.z.ToString());
     }
     public void UpdateLevel(int level)
     {

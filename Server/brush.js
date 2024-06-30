@@ -9,12 +9,12 @@ function change_direction()
 
 function rotatePointWithRadius(px, py, cx, cy, angle, radius) {
   // Translate point to the origin
-  cx = parseFloat(cx);
-  cy = parseFloat(cy);
-  angle = parseFloat(angle);
-  radius = parseFloat(radius);
-  px = parseFloat(px);
-  py = parseFloat(py);
+  // cx = parseFloat(cx);
+  // cy = parseFloat(cy);
+  // px = parseFloat(px);
+  // py = parseFloat(py);
+  // angle = parseFloat(angle);
+  // radius = parseFloat(radius);
   
   let translatedX = px - cx;
   let translatedY = py - cy;
@@ -44,10 +44,10 @@ function rotatePointWithRadius(px, py, cx, cy, angle, radius) {
 
 function distance_between_two_point(x1, y1, x2, y2)
 {
-  x1 = parseFloat(x1);
-  y1 = parseFloat(y1);
-  x2 = parseFloat(x2);
-  y2 = parseFloat(y2);
+  // x1 = parseFloat(x1);
+  // y1 = parseFloat(y1);
+  // x2 = parseFloat(x2);
+  // y2 = parseFloat(y2);
   return Math.sqrt(Math.pow((x2 - x1), 2) + Math.pow((y2 - y1),2));
 }
 

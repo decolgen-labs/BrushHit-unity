@@ -78,6 +78,7 @@ io.on('connection', socket => {
     updateCalculate();
     // socket.emit('update, { data: _deltaTime });
     let stringData = JSON.stringify({ mainBrush: _mainBrush, otherBrush: _otherBrush });
+    console.log(stringData);
     socket.emit('updateBrushPosition', stringData);
     _currentTime = new Date().getTime();
   });
