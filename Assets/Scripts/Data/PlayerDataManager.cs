@@ -28,6 +28,7 @@ public class PlayerDataManager : MonoBehaviorInstance<PlayerDataManager>
     }
     public void SetPlayerIngamePoint(int point)
     {
+        Debug.Log("SetPlayerIngamePoint: " + point);
         _playerIngamePoint = point;
     }
     #endregion
