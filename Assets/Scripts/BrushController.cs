@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class BrushController : MonoBehaviour
@@ -27,6 +26,7 @@ public class BrushController : MonoBehaviour
     private int _direction;
     private int _numberOfGrowUp;
     private bool _isPlatform;
+    private bool _isPressed;
 
     public bool _isTransition { get; private set; }
 
@@ -67,10 +67,32 @@ public class BrushController : MonoBehaviour
     {
         if (_gameManager.IsPlaying && !_isTransition)
         {
-            if (_gameManager.IsTouchingDown && !_gameManager.CheckClickUI())
+            if (_gameManager.IsTouchingDown && !_gameManager.CheckClickUI() && _isPressed == false)
+            {
+                _isPressed = true;
+                SocketConnectManager.Instance.PlayerInput();
+            }
+        }
+
+        // Update platform position
+        if(_isPlatform)
+        {
+            Vector3 offset = this.transform.parent.position - _oldParentPos;
+            SocketConnectManager.Instance.UpdatePlatformOffset(offset);
+            _oldParentPos = this.transform.parent.position;
+        }
+        else
+        {
+            SocketConnectManager.Instance.UpdatePlatformOffset(Vector3.zero);
+        }
+
+        // Update position
+        (Vector3 mainBrush, Vector3 otherBrush) = SocketConnectManager.Instance.GetBrushPosition();
+        if(mainBrush != _mainBrush.transform.position)
+        {
+            if(_isPressed)
             {
                 UpdateMainBrush();
-                SocketConnectManager.Instance.PlayerInput();
                 if (!_gameManager.IsImmortal)
                 {
                     GameObject thingBelow = CheckBelow();
@@ -88,21 +110,8 @@ public class BrushController : MonoBehaviour
                     }
                 }
             }
+            _isPressed = false;
         }
-
-        // Update platform position
-        if(_isPlatform)
-        {
-            Vector3 offset = this.transform.parent.position - _oldParentPos;
-            SocketConnectManager.Instance.UpdatePlatformOffset(offset);
-            _oldParentPos = this.transform.parent.position;
-        }
-        else
-        {
-            SocketConnectManager.Instance.UpdatePlatformOffset(Vector3.zero);
-        }
-        // Update position
-        (Vector3 mainBrush, Vector3 otherBrush) = SocketConnectManager.Instance.GetBrushPosition();
         GetRotateBrush().transform.position = otherBrush;
         _mainBrush.transform.position = mainBrush;
         this.transform.position = mainBrush;
@@ -110,9 +119,6 @@ public class BrushController : MonoBehaviour
         // Update rotation
         Vector3 rotateVector = (otherBrush - mainBrush).normalized;
         this.transform.forward = rotateVector;
-    }
-    void LateUpdate()
-    {
     }
 
     public void UpdateTag(string tag)
@@ -146,12 +152,11 @@ public class BrushController : MonoBehaviour
 
     public void UpdateMainBrush()
     {
+        _audioSource.PlayOneShot(_brushSFX, 1f);
         _brushIndex = (_brushIndex + 1) % 2;
         _direction = -_direction;
         _mainBrush = _brush[_brushIndex];
         _camera.UpdateTarget(_mainBrush);
-
-        _audioSource.PlayOneShot(_brushSFX, 1f);
     }
 
     IEnumerator EnableAnimators()

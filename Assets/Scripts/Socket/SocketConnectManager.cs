@@ -74,7 +74,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     }
     private void CollectCoinCallback(string data)
     {
-        UnityEngine.Debug.Log("CollectCoin: " + data);
+        UnityEngine.Debug.Log("Collected Coin: " + data);
         PlayerDataManager.Instance.SetPlayerIngamePoint(JsonConvert.DeserializeObject<int>(data));
     }
     private void UpdateProof(string proof)
@@ -122,7 +122,8 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     }
     public void CoinCollect(Vector3 position)
     {
-        JsSocketConnect.EmitCoinCollect(position.x.ToString(), position.y.ToString());
+        UnityEngine.Debug.Log("Socket emit coin collect");
+        JsSocketConnect.EmitCoinCollect(position.x.ToString(), position.z.ToString());
     }
     public bool IsSpawnCoin()
     {

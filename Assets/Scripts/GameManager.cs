@@ -208,8 +208,6 @@ public class GameManager : MonoBehaviour
         IsFreezing = false;
         IsImmortal = false;
 
-        GameObject spawnPoint = GameObject.FindGameObjectWithTag("Spawn");
-
         _brushTool.Reset();
         _brushTool.IsSpawning(true);
 

@@ -20,7 +20,16 @@ public class SpawnManager : MonoBehaviour
         {
             Destroy(rubber.gameObject);
         }
-        _rubbers = new List<GameObject>();
+        _rubbers.Clear();
+
+        StartCoroutine(SpawnRubberDelay());
+
+        StartCoroutine(SpawnCoinDelay());
+    }
+
+    IEnumerator SpawnRubberDelay()
+    {
+        yield return new WaitForEndOfFrame();
         GameObject rubbers = new GameObject();
         rubbers.transform.SetParent(_gameManager._levelData.transform);
         rubbers.name = "Rubbers";
@@ -62,7 +71,6 @@ public class SpawnManager : MonoBehaviour
                 }
             }
         }
-        StartCoroutine(SpawnCoinDelay());
     }
 
     //This function used to spawn PowerUps in game, when user color the rubber, they can randomly spawn a power ups in there
@@ -88,7 +96,7 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator SpawnCoinDelay()
     {
-        yield return new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(1f);
         if(SocketConnectManager.Instance.IsSpawnCoin())
         {
             GameObject rubber = _rubbers.GetRandom();
