@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3938004035137767342}
   - component: {fileID: 4601796540210338855}
   - component: {fileID: 6694240891922874492}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Rubber
   m_TagString: Rubber
   m_Icon: {fileID: 0}
