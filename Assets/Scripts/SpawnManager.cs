@@ -12,6 +12,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] GameObject _freezePrefab;
     [SerializeField] GameObject _immortalPrefab;
     [SerializeField] GameManager _gameManager;
+    [SerializeField] private GameObject _coinPrefab;
     List<GameObject> _rubbers = new List<GameObject>();
 
     public void SpawnRubbers()
@@ -23,8 +24,6 @@ public class SpawnManager : MonoBehaviour
         _rubbers.Clear();
 
         StartCoroutine(SpawnRubberDelay());
-
-        StartCoroutine(SpawnCoinDelay());
     }
 
     IEnumerator SpawnRubberDelay()
@@ -34,7 +33,7 @@ public class SpawnManager : MonoBehaviour
         rubbers.transform.SetParent(_gameManager._levelData.transform);
         rubbers.name = "Rubbers";
         rubbers.transform.position = Vector3.zero;
-        SocketConnectManager.Instance.UpdateLevel(_gameManager.Level);
+        SocketConnectManager.Instance.UpdateLevel(_gameManager.SocketStage);
 
         //Find all platform in level
         GameObject[] platforms = GameObject.FindGameObjectsWithTag("Platform");
@@ -73,34 +72,23 @@ public class SpawnManager : MonoBehaviour
         }
     }
 
-    //This function used to spawn PowerUps in game, when user color the rubber, they can randomly spawn a power ups in there
-    //The power ups always spawn in the constant radius from that colored rubber
-    public void SpawnPowerUps(GameObject rubber, int type, int number)
+    public void SpawnCoin(GameObject rubber, int number)
     {
         Vector3 position = rubber.transform.position;
         float angle = 360 / (number + 1);
         for(int i = 0; i < number; i++)
         {
-            GameObject powerUp = null;
-            if (type == 0)
-            {
-                powerUp = Instantiate(_growUpPrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
-            } else if(type == 1) {
-                powerUp = Instantiate(_freezePrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
-            } else {
-                powerUp = Instantiate(_immortalPrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
-            }
-            powerUp.transform.SetParent(_gameManager._levelData.transform);
-        }
-    }
-
-    IEnumerator SpawnCoinDelay()
-    {
-        yield return new WaitForSeconds(1f);
-        if(SocketConnectManager.Instance.IsSpawnCoin())
-        {
-            GameObject rubber = _rubbers.GetRandom();
-            rubber.GetComponent<RubberController>().SetCoin(true);
+            GameObject coinObject = null;
+            coinObject = Instantiate(_coinPrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
+            // if (type == 0)
+            // {
+            //     powerUp = Instantiate(_growUpPrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
+            // } else if(type == 1) {
+            //     powerUp = Instantiate(_freezePrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
+            // } else {
+            //     powerUp = Instantiate(_immortalPrefab, position, Quaternion.Euler(0, (i + 1) * angle, 0));
+            // }
+            coinObject.transform.SetParent(_gameManager._levelData.transform);
         }
     }
 }

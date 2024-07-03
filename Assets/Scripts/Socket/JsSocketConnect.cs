@@ -17,6 +17,8 @@ public class JsSocketConnect
     public static extern void RegisterUpdateCoin(string objectName, string methodName);
     [DllImport("__Internal")]
     public static extern void RegisterUpdateProof(string objectName, string methodName);
+    [DllImport("__Internal")]
+    public static extern void RegisterUpdateLevelCoin(string objectName, string methodName);
 
     #region Emit
     [DllImport("__Internal")]

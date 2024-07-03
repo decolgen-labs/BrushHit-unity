@@ -21,10 +21,10 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
 {
     public Action<ProofClass> onClaim;
 
+    [HideInInspector] public bool isSpawnCoin;
     public SocketIOUnity socket;
     public (Vector2 mainBrush, Vector2 otherBrush) _brushTuple;
     public float brushHeigh;
-    public bool isSpawnCoin;
     public ProofClass proofStruct;
 
     #region Unity function
@@ -35,10 +35,11 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
         JsSocketConnect.SocketIOInit();
 
         JsSocketConnect.RegisterUpdateBrushPosition(this.gameObject.name, nameof(UpdateBrushPos));
-        JsSocketConnect.RegisterSpawnCoin(this.gameObject.name, nameof(SpawnCoin));
+        // JsSocketConnect.RegisterSpawnCoin(this.gameObject.name, nameof(SpawnCoin));
         JsSocketConnect.RegisterUpdateCoin(this.gameObject.name, nameof(CollectCoinCallback));
         JsSocketConnect.RegisterUpdateProof(this.gameObject.name, nameof(UpdateProof));
     }
+
     void Update()
     {
         JsSocketConnect.EmitUpdate();
@@ -55,6 +56,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     #endregion
 
     #region SocketEvent
+
     private void UpdateBrushPos(string data)
     {
         if(!string.IsNullOrEmpty(data))
@@ -76,6 +78,7 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     {
         UnityEngine.Debug.Log("Collected Coin: " + data);
         PlayerDataManager.Instance.SetPlayerIngamePoint(JsonConvert.DeserializeObject<int>(data));
+        UIManager.Ins.UpdateScore();
     }
     private void UpdateProof(string proof)
     {
