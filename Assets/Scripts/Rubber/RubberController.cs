@@ -60,7 +60,7 @@ public class RubberController : MonoBehaviour
         if(isCoin)
         {
             Debug.Log("Is Coin");
-            _coinController = Instantiate(_coinPrefab, this.transform.position + new Vector3(0, 1f, 0), Quaternion.identity).GetComponent<CoinController>();
+            // _coinController = Instantiate(_coinPrefab, this.transform.position + new Vector3(0, 1f, 0), Quaternion.identity).GetComponent<CoinController>();
         }
     }
 

@@ -45,7 +45,7 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
 
     private void ConnectBraavos()
     {
-
+        StartCoroutine(ConnectWalletAsync(JSInteropManager.ConnectWalletBraavos));
     }
 
     private void ConnectArgentX()
@@ -55,6 +55,11 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
     IEnumerator ConnectWalletAsync(Action connectWalletFunction)
     {
         // Call the JavaScript method to connect the wallet
+        if(!JSInteropManager.IsWalletAvailable())
+        {
+            JSInteropManager.AskToInstallWallet();
+        }
+        yield return new WaitUntil(() => JSInteropManager.IsWalletAvailable());
         connectWalletFunction();
         yield return new WaitUntil(() => JSInteropManager.IsConnected());
 
