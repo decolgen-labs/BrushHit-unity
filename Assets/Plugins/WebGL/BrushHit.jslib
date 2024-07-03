@@ -6,8 +6,8 @@ mergeInto( LibraryManager.library,{
             return;
         }
 
-        var socket = io('http://localhost:5005/');
-        // var socket = io('https://starksweep-socket.starkarcade.com/');
+        // var socket = io('http://localhost:5005/');
+        var socket = io('https://starksweep-socket.starkarcade.com/');
 
         socket.on('connect', () => {
             socket.isReady = true;
