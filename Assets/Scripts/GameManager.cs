@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using System;
 using NOOD;
+using Newtonsoft.Json;
 
 //This script handle the game
 public class GameManager : MonoBehaviour
@@ -37,6 +38,8 @@ public class GameManager : MonoBehaviour
     public GameObject _levelData { get; private set; }
     public int Level { get; private set; }
     public int Stage { get; private set; }
+    public int LevelCoin{ get; private set; }
+    public int SocketStage{ get; private set; }
 
     public bool IsFreezing { get; private set; }
     public bool IsImmortal { get; private set; }
@@ -56,6 +59,7 @@ public class GameManager : MonoBehaviour
         Physics.autoSyncTransforms = false;
         //this line to reduce the physics calculation
         Physics.reuseCollisionCallbacks = true;
+        JsSocketConnect.RegisterUpdateLevelCoin(this.gameObject.name, nameof(UpdateLevelCoin));
         Init();
     }
     #endregion
@@ -132,6 +136,11 @@ public class GameManager : MonoBehaviour
         _uiManager.UpdateScore();
     }
 
+    public void UpdateLevelCoin(string coin)
+    {
+        LevelCoin = JsonConvert.DeserializeObject<int>(coin);
+    }
+
 
     //this function to check when player click on UI so do not control the brush
     public bool CheckClickUI()
@@ -179,6 +188,7 @@ public class GameManager : MonoBehaviour
         {
             Stage++;
         }
+        SocketStage++;
         StopGame();
         _uiManager.EndLevel(true);
         SaveData();
@@ -186,6 +196,9 @@ public class GameManager : MonoBehaviour
 
     public void LoseGame()
     {
+        Level = 0;
+        Stage = 0;
+        SocketStage = 0;
         StopGame();
         _uiManager.EndLevel(false);
     }
@@ -238,12 +251,27 @@ public class GameManager : MonoBehaviour
     {
         if (IsPlaying)
         {
-            GetGrowUps();
-            GetFreeze();
-            GetImmortal();
+            // GetGrowUps();
+            // GetFreeze();
+            // GetImmortal();
+            TryGetCoin();
 
             _uiManager.UpdateScore();
             _audioSource.PlayOneShot(_scoreSFX, 0.1f);
+        }
+    }
+
+    private void TryGetCoin()
+    {
+        if (LevelCoin > 0)
+        {
+            int result = UnityEngine.Random.Range(0, PowerUpRatio);
+            if (result == 0)
+            {
+                int coinNumber = 1;
+                _spawnManager.SpawnCoin(_brushTool.GetRotateBrush(), coinNumber);
+                LevelCoin -= coinNumber;
+            }
         }
     }
 
@@ -255,7 +283,7 @@ public class GameManager : MonoBehaviour
             if (result == 0)
             {
                 _isGetGrowUp = true;
-                _spawnManager.SpawnPowerUps(_brushTool.GetRotateBrush(), 0, 3);
+                // _spawnManager.SpawnCoin(_brushTool.GetRotateBrush(), 0, 3);
             }
         }
     }
@@ -268,7 +296,7 @@ public class GameManager : MonoBehaviour
             if (result == 1)
             {
                 _isGetFreeze = true;
-                _spawnManager.SpawnPowerUps(_brushTool.GetRotateBrush(), 1, 1);
+                // _spawnManager.SpawnCoin(_brushTool.GetRotateBrush(), 1, 1);
             }
         }
     }
@@ -281,7 +309,7 @@ public class GameManager : MonoBehaviour
             if (result == 2)
             {
                 _isGetImmortal = true;
-                _spawnManager.SpawnPowerUps(_brushTool.GetRotateBrush(), 2, 1);
+                // _spawnManager.SpawnCoin(_brushTool.GetRotateBrush(), 2, 1);
             }
         }
     }

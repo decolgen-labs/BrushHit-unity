@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44793558, g: 0.49793524, b: 0.5754853, a: 1}
+  m_IndirectSpecularColor: {r: 0.44793606, g: 0.497936, b: 0.5754863, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -685,6 +685,7 @@ MonoBehaviour:
   _freezePrefab: {fileID: 3672463689552948232, guid: dba8877252432764f873beadadda8f22, type: 3}
   _immortalPrefab: {fileID: 4740577596562731006, guid: 2966a6e0bef551147bb05c3d5a1c453c, type: 3}
   _gameManager: {fileID: 2102365744}
+  _coinPrefab: {fileID: 7223906277408349827, guid: 9d34f9ce8d9994e1ab82b76e901bb98d, type: 3}
 --- !u!4 &794267824
 Transform:
   m_ObjectHideFlags: 0
@@ -1119,6 +1120,7 @@ MonoBehaviour:
   _dontDestroyOnLoad: 0
   brushHeigh: 0
   isSpawnCoin: 0
+  gameManager: {fileID: 0}
 --- !u!1 &1197900182
 GameObject:
   m_ObjectHideFlags: 0
