@@ -6,8 +6,8 @@ mergeInto( LibraryManager.library,{
             return;
         }
 
-        var socket = io('http://localhost:5005/');
-        // var socket = io('https://starksweep-socket.starkarcade.com/');
+        // var socket = io('http://localhost:5005/');
+        var socket = io('https://starksweep-socket.starkarcade.com/');
 
         socket.on('connect', () => {
             socket.isReady = true;
@@ -33,6 +33,10 @@ mergeInto( LibraryManager.library,{
         socket.on('updateLevelCoin', (levelCoin) => {
             if(this.updateLevelCoinMethodStr && this.updateLevelCoinObjectStr)
                 SendMessage(this.updateLevelCoinObjectStr, this.updateLevelCoinMethodStr, levelCoin);
+        });
+        socket.on('updateMainBrush', ()=> {
+            if(this.updateMainBrushObjectStr, this.updateMainBrushMethodStr)
+                SendMessage(this.updateMainBrushObjectStr, this.updateMainBrushMethodStr);
         });
 
         window.unitySocket = socket;
@@ -67,6 +71,11 @@ mergeInto( LibraryManager.library,{
     {
         this.updateLevelCoinObjectStr= UTF8ToString(updateObjectName);
         this.updateLevelCoinMethodStr= UTF8ToString(updateMethodName);
+    },
+    RegisterUpdateMainBrush:function(updateObjectName, updateMethodName)
+    {
+        this.updateMainBrushObjectStr = UTF8ToString(updateObjectName);
+        this.updateMainBrushMethodStr = UTF8ToString(updateMethodName);
     },
 
 

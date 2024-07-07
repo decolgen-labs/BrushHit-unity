@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class BrushController : MonoBehaviour
@@ -23,12 +24,9 @@ public class BrushController : MonoBehaviour
     private Vector3 _oldParentPos;
 
     private int _brushIndex = 0;
-    private int _direction;
     private int _numberOfGrowUp;
     private bool _isPlatform;
     private bool _isPressed;
-
-    public bool _isTransition { get; private set; }
 
     void Awake()
     {
@@ -36,12 +34,12 @@ public class BrushController : MonoBehaviour
         _uiManager = GameObject.Find("UIManager").GetComponent<UIManager>();
         _camera = GameObject.FindAnyObjectByType<CameraController>();
         SetMeshMaterial(_brushMaterial);
+        JsSocketConnect.RegisterUpdateMainBrush(this.gameObject.name, nameof(UpdateMainBrush));
     }
     public void Reset()
     {
         Debug.Log("Reset");
         _brushIndex = 0;
-        _direction = 1;
         _numberOfGrowUp = 0;
         _mainBrush = _brush[_brushIndex];
         _camera.UpdateTarget(_mainBrush);
@@ -65,11 +63,12 @@ public class BrushController : MonoBehaviour
     }
     void Update()
     {
-        if (_gameManager.IsPlaying && !_isTransition)
+        if (_gameManager.IsPlaying)
         {
-            if (_gameManager.IsTouchingDown && !_gameManager.CheckClickUI() && _isPressed == false)
+            if (_gameManager.IsTouchingDown && !_gameManager.CheckClickUI())
             {
                 _isPressed = true;
+                Debug.Log("Player input");
                 SocketConnectManager.Instance.PlayerInput();
             }
         }
@@ -93,25 +92,9 @@ public class BrushController : MonoBehaviour
             if(_isPressed)
             {
                 UpdateMainBrush();
-                if (!_gameManager.IsImmortal)
-                {
-                    GameObject thingBelow = CheckBelow();
-                    if (thingBelow == null || !thingBelow.CompareTag("Platform"))
-                    {
-                        _gameManager.LoseGame();
-                        transform.SetParent(null);
-                        _isPlatform = false;
-                    }
-                    else
-                    {
-                        transform.SetParent(thingBelow.transform.parent);
-                        _oldParentPos = thingBelow.transform.parent.position;
-                        _isPlatform = true;
-                    }
-                }
             }
-            _isPressed = false;
         }
+
         GetRotateBrush().transform.position = otherBrush;
         _mainBrush.transform.position = mainBrush;
         this.transform.position = mainBrush;
@@ -152,24 +135,26 @@ public class BrushController : MonoBehaviour
 
     public void UpdateMainBrush()
     {
-        _audioSource.PlayOneShot(_brushSFX, 1f);
         _brushIndex = (_brushIndex + 1) % 2;
-        _direction = -_direction;
         _mainBrush = _brush[_brushIndex];
         _camera.UpdateTarget(_mainBrush);
-    }
+        _audioSource.PlayOneShot(_brushSFX, 1f);
 
-    IEnumerator EnableAnimators()
-    {
-        _isTransition = true;
-        _brushVFX.Stop();
-        yield return new WaitForSeconds(2);
-        _isTransition = false;
-    }
-
-    //Handle Animation of spawning brush and dispawning brush
-    public void IsSpawning(bool spawn)
-    {
+        Debug.Log("Update main brush");
+        GameObject thingBelow = CheckBelow();
+        if (thingBelow == null || !thingBelow.CompareTag("Platform"))
+        {
+            _gameManager.LoseGame();
+            transform.SetParent(null);
+            _isPlatform = false;
+        }
+        else
+        {
+            transform.SetParent(thingBelow.transform.parent);
+            _oldParentPos = thingBelow.transform.parent.position;
+            _isPlatform = true;
+        }
+        _isPressed = false;
     }
 
     //Add point to grow up
@@ -206,6 +191,7 @@ public class BrushController : MonoBehaviour
     //Check below of brush to know that player is going out the platform or not
     public GameObject CheckBelow()
     {
+        Debug.Log("Check below");
         Ray ray = new Ray(_mainBrush.transform.position, Vector3.down);
         RaycastHit[] raycastHits = Physics.RaycastAll(ray, 100f);
         foreach(RaycastHit hit in raycastHits)

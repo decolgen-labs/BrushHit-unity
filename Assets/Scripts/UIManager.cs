@@ -40,6 +40,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] Button _connectWalletButtonBraavos;
     [SerializeField] GameObject _connectWalletPanel;
 
+    public bool IsTransitioning { get; private set; } = false;
+
     private TextMeshProUGUI _scoreText;
     private TextMeshProUGUI _startText;
     private TextMeshProUGUI _notificationText;
@@ -175,6 +177,7 @@ public class UIManager : MonoBehaviour
     //Turn on Transition Canvas and Reload Level
     IEnumerator TransitionLevel(float timeToWait, float duration)
     {
+        IsTransitioning = true;
         yield return new WaitForSeconds(timeToWait);
         _transitionCanvas.GetComponent<Animator>().SetTrigger("Transition");
         yield return new WaitForSeconds(duration);
@@ -182,6 +185,7 @@ public class UIManager : MonoBehaviour
         {
             _gameManager.LoadLevel();
         }
+        IsTransitioning = false;
     }
 
     //When user end level->display notification
