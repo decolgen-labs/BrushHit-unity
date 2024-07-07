@@ -43,11 +43,6 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     void Update()
     {
         JsSocketConnect.EmitUpdate();
-        // if(Input.GetKeyDown(KeyCode.T))
-        // {
-        //     UnityEngine.Debug.Log("TryClaim");
-        //     Claim();
-        // }
     }
     void OnDestroy()
     {
@@ -66,17 +61,14 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
             }catch{
                 UnityEngine.Debug.Log("UpdateBrushPos: " + data);
             }
-            // UnityEngine.Debug.Log("receive: " + data);
         }
     }
     private void SpawnCoin(string valueBool)
     {
-        UnityEngine.Debug.Log("spawnCoin: " + valueBool);
         isSpawnCoin = JsonConvert.DeserializeObject<bool>(valueBool);
     }
     private void CollectCoinCallback(string data)
     {
-        UnityEngine.Debug.Log("Collected Coin: " + data);
         PlayerDataManager.Instance.SetPlayerIngamePoint(JsonConvert.DeserializeObject<int>(data));
         UIManager.Ins.UpdateScore();
     }
@@ -100,7 +92,6 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     public void SetBrushPosition(Vector3 mainBrush, Vector3 otherBrush)
     {
         brushHeigh = mainBrush.y;
-        UnityEngine.Debug.Log($"Send: {mainBrush.x} {mainBrush.z}, {otherBrush.x} {otherBrush.z}" );
         JsSocketConnect.EmitUpdateBrushPosition(mainBrush.x.ToString(), mainBrush.z.ToString(), otherBrush.x.ToString(), otherBrush.z.ToString());
     }
     public void UpdatePlatformOffset(Vector3 position)
@@ -127,17 +118,5 @@ public class SocketConnectManager : MonoBehaviorInstance<SocketConnectManager>
     {
         UnityEngine.Debug.Log("Socket emit coin collect");
         JsSocketConnect.EmitCoinCollect(position.x.ToString(), position.z.ToString());
-    }
-    public bool IsSpawnCoin()
-    {
-        bool result = isSpawnCoin;
-        UnityEngine.Debug.Log("GetSpawnCoin: " + isSpawnCoin);
-        isSpawnCoin = false;
-        return result;
-    }
-
-    public void Log(string value)
-    {
-        UnityEngine.Debug.Log(value);
     }
 }
