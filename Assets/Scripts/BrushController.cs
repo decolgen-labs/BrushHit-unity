@@ -38,7 +38,6 @@ public class BrushController : MonoBehaviour
     }
     public void Reset()
     {
-        Debug.Log("Reset");
         _brushIndex = 0;
         _numberOfGrowUp = 0;
         _mainBrush = _brush[_brushIndex];
@@ -68,7 +67,6 @@ public class BrushController : MonoBehaviour
             if (_gameManager.IsTouchingDown && !_gameManager.CheckClickUI())
             {
                 _isPressed = true;
-                Debug.Log("Player input");
                 SocketConnectManager.Instance.PlayerInput();
             }
         }
@@ -140,7 +138,6 @@ public class BrushController : MonoBehaviour
         _camera.UpdateTarget(_mainBrush);
         _audioSource.PlayOneShot(_brushSFX, 1f);
 
-        Debug.Log("Update main brush");
         GameObject thingBelow = CheckBelow();
         if (thingBelow == null || !thingBelow.CompareTag("Platform"))
         {
@@ -191,7 +188,6 @@ public class BrushController : MonoBehaviour
     //Check below of brush to know that player is going out the platform or not
     public GameObject CheckBelow()
     {
-        Debug.Log("Check below");
         Ray ray = new Ray(_mainBrush.transform.position, Vector3.down);
         RaycastHit[] raycastHits = Physics.RaycastAll(ray, 100f);
         foreach(RaycastHit hit in raycastHits)

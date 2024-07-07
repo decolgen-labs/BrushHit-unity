@@ -18,7 +18,7 @@ public class PlayerDataManager : MonoBehaviorInstance<PlayerDataManager>
     }
 
     #region Set
-    public void SetPlayerData(string playerAddress)
+    public void SetPlayerAddress(string playerAddress)
     {
         PlayerPrefs.SetString("PlayerAddress", playerAddress);
     }
@@ -28,7 +28,6 @@ public class PlayerDataManager : MonoBehaviorInstance<PlayerDataManager>
     }
     public void SetPlayerIngamePoint(int point)
     {
-        Debug.Log("SetPlayerIngamePoint: " + point);
         _playerIngamePoint = point;
     }
     #endregion

@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class CoinController : MonoBehaviour
 {
+    private bool _isClaimed = false;
+    
     void Awake()
     {
     }
@@ -15,8 +17,9 @@ public class CoinController : MonoBehaviour
 
     void OnCollisionEnter(Collision other)
     {
-        if(other.gameObject.CompareTag("Brush"))
+        if(other.gameObject.CompareTag("Brush") && _isClaimed == false)
         {
+            _isClaimed = true;
             CollectCoin(this.transform.position);
         }
     }

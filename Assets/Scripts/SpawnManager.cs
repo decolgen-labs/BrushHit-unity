@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NOOD.Extension;
 using UnityEngine;
 
-//This script used to spawn all rubbers on platform and power-up prefab
+//This script used to spawn all rubbers on platform and coin prefab
 //rubber: all the small things on the platform you see in levels when you control the brush go through and change their color to get point
 public class SpawnManager : MonoBehaviour
 {
@@ -65,8 +65,6 @@ public class SpawnManager : MonoBehaviour
                     rubberController.SetColor(_gameManager.DefaultColor);
                     rubberController.UpdateColor(_gameManager.DefaultColor, _gameManager.BrushedColor);
                     rubber.transform.parent = rubbers.transform;
-                    rubberController.index = _rubbers.Count -1;
-                    rubberController.SetCoin(false);
                 }
             }
         }
