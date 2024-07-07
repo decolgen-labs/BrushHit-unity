@@ -48,9 +48,9 @@ public class GameManager : MonoBehaviour
     private bool _isGetGrowUp = false;
     private bool _isGetFreeze = false;
     private bool _isGetImmortal = false;
-    private int _currentPoint;
-    private int _previousPoint;
     private int _totalRubberInLevel;
+    private float _pressCoolDown = 0.1f;
+    private float _previousPress = 0f;
 
     #region Unity functions
     // Start is called before the first frame update
@@ -61,6 +61,7 @@ public class GameManager : MonoBehaviour
         Physics.reuseCollisionCallbacks = true;
         JsSocketConnect.RegisterUpdateLevelCoin(this.gameObject.name, nameof(UpdateLevelCoin));
         Init();
+        _previousPress = Time.time;
     }
     #endregion
 
@@ -73,7 +74,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.touchCount > 0 || Input.GetMouseButtonDown(0)){
+        if (_uiManager.IsTransitioning) return;
+        if(Input.touchCount > 0 || Input.GetMouseButtonDown(0))
+        {
             if (!IsTouchingDown && !_isTouching)
             {
                 IsTouchingDown = true;
@@ -81,7 +84,9 @@ public class GameManager : MonoBehaviour
             } else {
                 IsTouchingDown = false;
             }
-        }else if (Input.touchCount == 0 && !Input.GetMouseButtonDown(0)) {
+        }
+        else if (Input.touchCount == 0 && !Input.GetMouseButtonDown(0)) 
+        {
             _isTouching = false;
             IsTouchingDown = false;
         }
@@ -97,7 +102,7 @@ public class GameManager : MonoBehaviour
         {
             CheckWin();
         } else {
-            if (IsTouchingDown && !CheckClickUI() && !_brushTool._isTransition)
+            if (IsTouchingDown && !CheckClickUI())
             {
 #if UNITY_EDITOR
                 Debug.Log("Pass Login");
@@ -113,15 +118,6 @@ public class GameManager : MonoBehaviour
                 });
 #endif
             }
-        }
-        if(IsTouchingDown)
-        {
-            if (_currentPoint != 0 && _currentPoint >= _previousPoint)
-            {
-                GetExtraScore();
-            }
-            _previousPoint = _currentPoint;
-            _currentPoint = 0;
         }
     }
 
@@ -222,7 +218,6 @@ public class GameManager : MonoBehaviour
         IsImmortal = false;
 
         _brushTool.Reset();
-        _brushTool.IsSpawning(true);
 
         DefaultColor = _levelScriptableObject.LevelDatas[Level].StagesData[Stage].DefaultColor;
         BrushedColor = _levelScriptableObject.LevelDatas[Level].StagesData[Stage].BrushedColor;
@@ -244,7 +239,6 @@ public class GameManager : MonoBehaviour
     {
         IsPlaying = false;
         _brushTool.UpdateTag("Untagged");
-        _brushTool.IsSpawning(false);
     }
 
     public void UpdateScore()
@@ -312,21 +306,6 @@ public class GameManager : MonoBehaviour
                 // _spawnManager.SpawnCoin(_brushTool.GetRotateBrush(), 2, 1);
             }
         }
-    }
-
-    private void GetExtraScore()
-    {
-        int extraScore = _currentPoint - _previousPoint;
-        if(extraScore == 0)
-        {
-            return;
-        }
-        _uiManager.DisplayNotification(0, extraScore);
-    }
-
-    public void ChangeGameMode()
-    {
-        RetryGame();
     }
 
     public void StartEffect(int type)
