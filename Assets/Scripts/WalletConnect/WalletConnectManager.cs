@@ -58,11 +58,6 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
             UIManager.Ins.ShowConnectWalletUI();
             UIManager.Ins.onArgentXButtonPress += ConnectArgentX;
             UIManager.Ins.onBraavosButtonPress += ConnectBraavos;
-            _onSuccess += () =>
-            {
-                UIManager.Ins.HideConnectWalletUI();
-                _isShowConnectWalletUI = false;
-            };
         }
     }
 
@@ -89,9 +84,11 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         _onSuccess?.Invoke();
         string playerAddress = JSInteropManager.GetAccount();
         PlayerDataManager.Instance.SetPlayerData(playerAddress);
-        userAddress = playerAddress;
-        UIManager.Ins.UpdateInfoPanel();
         SyncPlayerPoint();
+        userAddress = playerAddress;
+        UIManager.Ins.HideConnectWalletUI();
+        UIManager.Ins.UpdateInfoPanel();
+        _isShowConnectWalletUI = false;
     }
 
     public void CheckUserBalance(string userAddress, string contractAddress, string selector, UnityRpcPlatform rpcPlatform)
