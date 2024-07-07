@@ -83,9 +83,9 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
 
         _onSuccess?.Invoke();
         string playerAddress = JSInteropManager.GetAccount();
-        PlayerDataManager.Instance.SetPlayerData(playerAddress);
-        SyncPlayerPoint();
+        PlayerDataManager.Instance.SetPlayerAddress(playerAddress);
         userAddress = playerAddress;
+        SyncPlayerPoint();
         UIManager.Ins.HideConnectWalletUI();
         UIManager.Ins.UpdateInfoPanel();
         _isShowConnectWalletUI = false;
@@ -113,16 +113,14 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         string[] calldata = new string[1];
         calldata[0] = userAddress;
         string calldataString = JsonUtility.ToJson(new ArrayWrapper { array = calldata });
-        Debug.Log("data string: " + calldataString);
         JSInteropManager.CallContract(contractAddress, "getUserPoint", calldataString, gameObject.name, nameof(PlayerPointCallback));
     }
 
     public void PlayerPointCallback(string response)
     {
         JsonResponse jsonResponse = JsonUtility.FromJson<JsonResponse>(response);
-        BigInteger balance = BigInteger.Parse(jsonResponse.result[0].Substring(2), NumberStyles.HexNumber);
-        Debug.Log("Balance: " + balance);
-        PlayerDataManager.Instance.SetPlayerSahPoint((int)balance);
+        int balance = Convert.ToInt32(jsonResponse.result[0], 16);
+        PlayerDataManager.Instance.SetPlayerSahPoint(balance);
         _gameManager.UpdatePoints();
     }
     public void Claim(ProofClass proofClass)

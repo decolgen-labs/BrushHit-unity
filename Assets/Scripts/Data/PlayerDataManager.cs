@@ -18,7 +18,7 @@ public class PlayerDataManager : MonoBehaviorInstance<PlayerDataManager>
     }
 
     #region Set
-    public void SetPlayerData(string playerAddress)
+    public void SetPlayerAddress(string playerAddress)
     {
         PlayerPrefs.SetString("PlayerAddress", playerAddress);
     }
