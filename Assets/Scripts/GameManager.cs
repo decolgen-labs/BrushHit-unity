@@ -104,19 +104,22 @@ public class GameManager : MonoBehaviour
         } else {
             if (IsTouchingDown && !CheckClickUI())
             {
-#if UNITY_EDITOR
-                Debug.Log("Pass Login");
-                IsPlaying = true; 
-                _uiManager.HideStartText();
-                _brushTool.UpdateTag("Brush");
-#elif UNITY_WEBGL
-                WalletConnectManager.Instance.ConnectWallet(() => 
-                { 
+                if(Application.isEditor)
+                {
+                    Debug.Log("Pass Login");
                     IsPlaying = true; 
                     _uiManager.HideStartText();
                     _brushTool.UpdateTag("Brush");
-                });
-#endif
+                }
+                else
+                {
+                    WalletConnectManager.Instance.ConnectWallet(() => 
+                    { 
+                        IsPlaying = true; 
+                        _uiManager.HideStartText();
+                        _brushTool.UpdateTag("Brush");
+                    });
+                }
             }
         }
     }

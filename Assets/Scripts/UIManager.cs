@@ -75,8 +75,16 @@ public class UIManager : MonoBehaviour
         //Display game ui
         StartCoroutine(DisplayGameUI());
         _infoButton.onClick.AddListener(ShowPlayerInfo);
-        _connectWalletButtonArgentX.onClick.AddListener(() => onArgentXButtonPress?.Invoke());
-        _connectWalletButtonBraavos.onClick.AddListener(() => onBraavosButtonPress?.Invoke());
+        _connectWalletButtonArgentX.onClick.AddListener(() => 
+        { 
+            onArgentXButtonPress?.Invoke();
+            UnityEngine.Debug.Log("ArgentX");
+        });
+        _connectWalletButtonBraavos.onClick.AddListener(() => 
+        { 
+            onBraavosButtonPress?.Invoke();
+            UnityEngine.Debug.Log("Braavos");
+        });
     }
     #endregion
 

@@ -56,20 +56,21 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         {
             _isShowConnectWalletUI = true;
             UIManager.Ins.ShowConnectWalletUI();
-            UIManager.Ins.onArgentXButtonPress += ConnectArgentX;
-            UIManager.Ins.onBraavosButtonPress += ConnectBraavos;
+            UIManager.Ins.onArgentXButtonPress = ConnectArgentX;
+            UIManager.Ins.onBraavosButtonPress = ConnectBraavos;
         }
-    }
-
-    private void ConnectBraavos()
-    {
-        StartCoroutine(ConnectWalletAsync(JSInteropManager.ConnectWalletBraavos));
     }
 
     private void ConnectArgentX()
     {
+        Debug.Log("ConnectArgentX");
         StartCoroutine(ConnectWalletAsync(JSInteropManager.ConnectWalletArgentX));
     }
+    private void ConnectBraavos()
+    {
+        StartCoroutine(ConnectWalletAsync(JSInteropManager.ConnectWalletBraavos));
+    } 
+
     IEnumerator ConnectWalletAsync(Action connectWalletFunction)
     {
         // Call the JavaScript method to connect the wallet
@@ -77,17 +78,17 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
         {
             JSInteropManager.AskToInstallWallet();
         }
-        yield return new WaitUntil(() => JSInteropManager.IsWalletAvailable());
         connectWalletFunction();
         yield return new WaitUntil(() => JSInteropManager.IsConnected());
 
         _onSuccess?.Invoke();
         string playerAddress = JSInteropManager.GetAccount();
-        PlayerDataManager.Instance.SetPlayerAddress(playerAddress);
         userAddress = playerAddress;
-        SyncPlayerPoint();
+        PlayerPrefs.SetString("playerAddress", playerAddress);
+        PlayerDataManager.Instance.SetPlayerAddress(playerAddress);
         UIManager.Ins.HideConnectWalletUI();
         UIManager.Ins.UpdateInfoPanel();
+        SyncPlayerPoint();
         _isShowConnectWalletUI = false;
     }
 

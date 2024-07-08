@@ -168,9 +168,13 @@ mergeInto(LibraryManager.library, {
     const callbackObjectStr = UTF8ToString(callbackObjectName);
     const callbackMethodStr = UTF8ToString(callbackMethodName);
 
-    await window.starknet.enable();
-    if (window.starknet.selectedAddress) {
-      window.starknet.account
+    const walletType = window.localStorage.getItem("walletType");
+    if(walletType == "argentX")
+    {
+      await window.starknet_argentX.enable();
+      if (window.starknet_argentX.selectedAddress) 
+      {
+        window.starknet_argentX.account
         .execute([
           {
             contractAddress: contractAddressStr,
@@ -194,6 +198,69 @@ mergeInto(LibraryManager.library, {
             errorMessage
           );
         });
+      }
+    }
+    else if(walletType == "braavos")
+    {
+      await window.starknet_braavos.enable();
+      if (window.starknet_braavos.selectedAddress) 
+      {
+        window.starknet_braavos.account
+        .execute([
+          {
+            contractAddress: contractAddressStr,
+            entrypoint: entrypointStr,
+            calldata: calldataArray.array,
+          },
+        ])
+        .then((response) => {
+          const transactionHash = response.transaction_hash;
+          myGameInstance.SendMessage(
+            callbackObjectStr,
+            callbackMethodStr,
+            transactionHash
+          );
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          myGameInstance.SendMessage(
+            callbackObjectStr,
+            callbackMethodStr,
+            errorMessage
+          );
+        });
+      }
+    }
+    else
+    {
+      await window.starknet.enable();
+      if (window.starknet.selectedAddress) 
+      {
+        window.starknet.account
+        .execute([
+          {
+            contractAddress: contractAddressStr,
+            entrypoint: entrypointStr,
+            calldata: calldataArray.array,
+          },
+        ])
+        .then((response) => {
+          const transactionHash = response.transaction_hash;
+          myGameInstance.SendMessage(
+            callbackObjectStr,
+            callbackMethodStr,
+            transactionHash
+          );
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          myGameInstance.SendMessage(
+            callbackObjectStr,
+            callbackMethodStr,
+            errorMessage
+          );
+        });
+      }
     }
   },
 
@@ -217,9 +284,12 @@ mergeInto(LibraryManager.library, {
     const callbackObjectStr = UTF8ToString(callbackObjectName);
     const callbackMethodStr = UTF8ToString(callbackMethodName);
 
-    await window.starknet.enable();
-    if (window.starknet.selectedAddress) {
-      window.starknet.account
+    const walletType = window.localStorage.getItem("walletType");
+    if(walletType == "starknetX")
+    {
+      await window.starknet_argentX.enable();
+      if (window.starknet_argentX.selectedAddress) {
+        window.starknet_argentX.account
         .callContract({
           contractAddress: contractAddressStr,
           entrypoint: entrypointStr,
@@ -241,6 +311,63 @@ mergeInto(LibraryManager.library, {
             errorMessage
           );
         });
+      }
+    }
+    else if(walletType == "braavos")
+    {
+      await window.starknet_braavos.enable();
+      if (window.starknet_braavos.selectedAddress) {
+        window.starknet_braavos.account
+        .callContract({
+          contractAddress: contractAddressStr,
+          entrypoint: entrypointStr,
+          calldata: calldataArray.array,
+        })
+        .then((response) => {
+          const responseStr = JSON.stringify(response);
+          myGameInstance.SendMessage(
+            callbackObjectStr,
+            callbackMethodStr,
+            responseStr
+          );
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          myGameInstance.SendMessage(
+            callbackObjectStr,
+            callbackMethodStr,
+            errorMessage
+          );
+        });
+      }
+    }
+    else
+    {
+      await window.starknet.enable();
+      if (window.starknet.selectedAddress) {
+        window.starknet.account
+        .callContract({
+          contractAddress: contractAddressStr,
+          entrypoint: entrypointStr,
+          calldata: calldataArray.array,
+        })
+        .then((response) => {
+          const responseStr = JSON.stringify(response);
+          myGameInstance.SendMessage(
+            callbackObjectStr,
+            callbackMethodStr,
+            responseStr
+          );
+        })
+        .catch((error) => {
+          const errorMessage = error.message;
+          myGameInstance.SendMessage(
+            callbackObjectStr,
+            callbackMethodStr,
+            errorMessage
+          );
+        });
+      }
     }
   },
 
