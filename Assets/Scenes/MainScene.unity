@@ -1118,9 +1118,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _dontDestroyOnLoad: 0
-  brushHeigh: 0
   isSpawnCoin: 0
-  gameManager: {fileID: 0}
+  brushHeigh: 0
 --- !u!1 &1197900182
 GameObject:
   m_ObjectHideFlags: 0
