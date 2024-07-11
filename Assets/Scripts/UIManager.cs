@@ -40,6 +40,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] Button _connectWalletButtonBraavos;
     [SerializeField] GameObject _connectWalletPanel;
 
+    // Sound Btn
+    [SerializeField] private ToggleHandler _soundToggle;
+
     public bool IsTransitioning { get; private set; } = false;
 
     private TextMeshProUGUI _scoreText;
@@ -85,8 +88,16 @@ public class UIManager : MonoBehaviour
             onBraavosButtonPress?.Invoke();
             UnityEngine.Debug.Log("Braavos");
         });
+        _soundToggle.onToggle += OnSoundToggle;
     }
     #endregion
+    private void OnSoundToggle(bool obj)
+    {
+        GameObject soundObj = GameObject.Find("SoundtrackAudio");
+        GameObject gameAudio = GameObject.Find("GameAudio");
+        soundObj.GetComponent<AudioSource>().mute = !obj;
+        gameAudio.GetComponent<AudioSource>().mute = !obj;
+    }
 
     #region Connect Wallet UI
     public void ShowConnectWalletUI()
