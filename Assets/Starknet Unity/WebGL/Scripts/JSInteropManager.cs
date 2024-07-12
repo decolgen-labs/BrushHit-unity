@@ -16,6 +16,9 @@ public class JSInteropManager : MonoBehaviour
     public static extern void ConnectWalletBraavos();
 
     [DllImport("__Internal")]
+    public static extern void DisconnectWallet();
+
+    [DllImport("__Internal")]
     public static extern bool IsConnected();
 
     [DllImport("__Internal")]

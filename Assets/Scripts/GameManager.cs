@@ -100,7 +100,14 @@ public class GameManager : MonoBehaviour
 
         if (IsPlaying)
         {
-            CheckWin();
+            if(JSInteropManager.IsConnected())
+            {
+                CheckWin();
+            }
+            else
+            {
+                WalletConnectManager.Instance.ConnectWallet(null);
+            }
         } else {
             if (IsTouchingDown && !CheckClickUI())
             {
