@@ -25,13 +25,20 @@ mergeInto(LibraryManager.library, {
     }
   },
 
+  DisconnectWallet: async function() {
+    window.localStorage.setItem("walletType", "");
+  },
+
   IsConnected: function () {
     let result = false;
-    if(window.starknet_argentX)
-      result = window.starknet_argentX.isConnected
-    if(result == false && window.starknet_braavos)
-      result = window.starknet_braavos.isConnected
-    return result
+    const walletType = window.localStorage.getItem("walletType");
+    if(walletType == "argentX")
+      result = window.starknet_argentX.isConnected;
+    else if(walletType == "braavos")
+      result = window.starknet_braavos.isConnected;
+    else
+      result = false;
+    return result;
   },
 
   GetAccount: function () {

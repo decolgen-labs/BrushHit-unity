@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -91,12 +92,12 @@ public class UIManager : MonoBehaviour
         _soundToggle.onToggle += OnSoundToggle;
     }
     #endregion
-    private void OnSoundToggle(bool obj)
+    private void OnSoundToggle(bool value)
     {
-        GameObject soundObj = GameObject.Find("SoundtrackAudio");
-        GameObject gameAudio = GameObject.Find("GameAudio");
-        soundObj.GetComponent<AudioSource>().mute = !obj;
-        gameAudio.GetComponent<AudioSource>().mute = !obj;
+        foreach(var sound in FindObjectsOfType<AudioSource>())
+        {
+            sound.mute = !value;
+        }
     }
 
     #region Connect Wallet UI

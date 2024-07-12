@@ -45,6 +45,11 @@ public class InfoPanelUI : MonoBehaviour
 
     private void Claim()
     {
+        if(JSInteropManager.IsConnected() == false)
+        {
+            WalletConnectManager.Instance.ConnectWallet(null);
+            return;
+        }
         SocketConnectManager.Instance.Claim();
         NoodyCustomCode.StartDelayFunction(() =>
         {
@@ -53,6 +58,8 @@ public class InfoPanelUI : MonoBehaviour
     }
     private void LogOut()
     {
+        JSInteropManager.DisconnectWallet();
+        _playerAddress.text = "0x00000000000";
     }
     public void Show()
     {
