@@ -142,7 +142,7 @@ public class WalletConnectManager : MonoBehaviorInstance<WalletConnectManager>
 
     public void ClaimCallback(string response)
     {
-        if(response == "User abort")
+        if(response == "User abort" || response == "Execute failed")
         {
             // user decline
             Debug.Log("Response: " + response);
